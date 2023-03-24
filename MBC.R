@@ -1,0 +1,226 @@
+Name <-c("Nomena","Kanto","Maya","Valery",'Tojo')
+Female<- c(TRUE,TRUE,TRUE,FALSE,FALSE)
+Height<-c(1.60,1.52,1.51,1.62,1.71) 
+MBC <- data.frame(Name,Female,Height)
+
+"C:/Users/Ant Lab 003/Documents/Data_frame.csv"
+read.csv("C:/Users/Ant Lab 003/Documents/Data_frame.csv")
+importation_fichier <- read.csv("C:/Users/Ant Lab 003/Documents/Data_frame.csv")
+read.csv2("C:/Users/Ant Lab 003/Documents/Data_frame.csv")
+library(dplyr)
+"c:/Users/Ant Lab 003/Documents/Data_frame.csv"
+read.csv("C:/Users/Ant Lab 003/Documents/Data_frame.csv")
+importation_fichier <- read.csv("C:/Users/Ant Lab 003/Documents/Data_frame.csv")
+mean(importation_fichier$Height)
+str(importation_fichier)
+sd(importation_fichier$Height)
+
+####IMPORTATION DONNEES EXO1####
+read.csv("C:/Users/Ant Lab 003/Documents/Exo/data_exo1.csv")
+tableau_exo1 <- read.csv("C:/Users/Ant Lab 003/Documents/Exo/data_exo1.csv")
+
+###Methodes t@correction
+
+mean_temp <-mean(tableau_exo1$temperature) 
+mean_eggs <- mean(tableau_exo1$eggs)
+
+med_temp <- median(tableau_exo1$temperature)
+med_eggs <- median(tableau_exo1$eggs)
+
+sd_temp <- sd(tableau_exo1$temperature)
+sd_eggs <- sd(tableau_exo1$eggs)
+              
+min_temp <- min(tableau_exo1$temperature)
+min_eggs <- min(tableau_exo1$eggs)
+
+max_temp <- max(tableau_exo1$temperature)
+max_eggs <- max(tableau_exo1$eggs)
+
+temperature <- c(mean_temp,med_temp,sd_temp,min_temp,max_temp)
+eggs <- c(mean_eggs,median_eggs,sd_eggs,min_eggs,max_eggs)
+
+results <- data.frame(temperature,eggs)
+row.names(results) <- c("mean","median","sd","min","max")
+View(results)
+
+write.csv(results,"C:/Users/Ant Lab 003/Documents/Github/export2_exo1.csv")
+
+####2nd methods
+
+mean(tableau_exo1$temperature)
+median(tableau_exo1$temperature)
+sd(tableau_exo1$temperature)
+min(tableau_exo1$temperature)
+max(tableau_exo1$temperature)
+
+####CALCUL_Eggs####
+mean(tableau_exo1$eggs)
+median(tableau_exo1$eggs)
+sd(tableau_exo1$eggs)
+min(tableau_exo1$eggs)
+max(tableau_exo1$eggs)
+
+####IMPORTATION DATA FRAME.CSV####
+results_exo1 <- read.csv("C:/Users/Ant Lab 003/Documents/Exo/data_frame_exo1.csv")
+
+####CODE MANAMBOATRA DATA FRAME####
+parameters <- c("mean","median","sd","min","max")
+temperature <- c(272.5187,273.426,20.8065,225.193,325.426)
+eggs <- c(101.22,100,9.831832,70,130)
+final_results <- data.frame(parameters,temperature,eggs)
+####Exportation fichier
+
+write.csv(final_results,"C:/Users/Ant Lab 003/Documents/Github/export_data_exo1.csv")
+
+###Milalao donnees @dplyr
+library(dplyr)
+View(starwars)
+dat1 <- starwars |>
+mutate(height_m = height * 0.01, bmi = mass/(height_m)^2)  |>
+select(name, bmi, gender)  |>
+filter(bmi > 25 & gender == "masculine")
+
+###19/01/2022
+library(dplyr)
+library(ggplot2)
+
+#import data
+data <- read.csv("C:/Users/antman/Documents/Data/data.csv")
+
+#Look at the number of rows and columns
+dim(data)
+
+#Calculate the number of individuals and genera per transect
+d1 <- data  |>
+  group_by(Collectors.code) |> 
+  summarise(n_ind=n(),n_gen=n_distinct(Genres))
+
+#Calculate the number of individuals and genera per transect per pitfall
+d2 <- data  |>  
+  group_by(Collectors.code, subsample)  |>
+  summarise(n_ind=n(),n_gen=n_distinct(Genres)) 
+
+#Total of individuals
+sum(d1$n_ind)
+View(d2)
+sum(d2$n_ind)
+
+#Plot the number of genera per transect
+#1
+ggplot(d1, aes(x=Collectors.code, y=n_gen))+
+  geom_col()
+
+#2
+ggplot(data, aes(x=Collectors.code))+
+  geom_bar()
+
+#multipanel figure, panel=transect
+ggplot(data, aes(x=subsample))+
+  geom_bar()+
+  facet_wrap(~Collectors.code)
+
+#Exercise with my own data
+#Install packages
+library(dplyr)
+library(ggplot2)
+
+#Import my data
+my_data <- read.csv("C:/Users/antman/Documents/Data/my_data.csv")
+
+#Look at the number of rows and columns
+dim(my_data)
+
+#Calculate the number of individuals and genera per transect per site
+d <- my_data  |>
+  group_by(Site, Transect) |>
+  summarise(n_gen=n_distinct(Genus), n_ind=n())
+
+#Plot the number of genera per site
+ggplot(d, aes(x=n_gen))+
+  geom_bar()+
+  facet_wrap(~Site)+
+  ggtitle("number of genera per site")+xlab("N Genera")
+
+
+#Calculate the number of individuals and genera per subsample per transect per site
+d1a <- my_data  |>
+  group_by(Site, Transect, Subsample)  |>  
+  summarise(n_gen=n_distinct(Genus), n_ind=n())
+
+#Calculating the number of genera per type 
+d1b <- my_data  |>
+  group_by(Type)  |>
+  summarise(n_gen=n_distinct(Genus))  
+
+#Plot the number of genera per type of culture
+ggplot(d1b, aes(x=Type, y=n_gen))+
+  geom_col()+
+  ggtitle("Number of genera per age of cultivation")+xlab("Age of cultivation")+ylab("N genera")
+
+
+
+#Calculating the number of individuals per subsample per transect per site per number
+d1c <- my_data  |>
+  group_by(Type, Site, Transect, Subsample)  |>
+  summarise(n_gen=n_distinct(Genus), n_ind=n())
+
+#Plot the number of individuals per type of culture
+ggplot(d1c, aes(x=n_ind, y=Type))+
+  geom_col()+
+  ggtitle("N individuals")+xlab("Age of cultivation")+ylab("N individuals")
+
+ggplot(d1c, aes(x=Transect))+
+  geom_bar()
+
+# multiplanel figure: panel = transect
+ggplot(d1c, aes(x =Subsample)) +
+  geom_bar()+
+  facet_wrap(~Type)+
+  ggtitle("number of individuals per age of cultivation")+xlab("Age of cultivation")+ylab("N individuals")
+
+library(dplyr)
+final_data <- read.csv("C:/Users/antman/Documents/Data/data_maya.csv")
+individuals <- final_data |>
+  group_by(Type)  |>
+  summarise(n_ind=n(), n_gen=n_distinct(Genus))  
+
+number <- final_data |>
+  group_by(Type, Site, Transect)  |>
+  summarise(n_ind=n(), n_gen=n_distinct(Genus))  
+
+data_num <- number
+write.csv(data_num, "C:/Users/antman/Documents/Data/Nindividuals.csv")
+
+data_mounting <- read.csv("C:/Users/antman/Documents/Data/data_maya.csv")
+Total <- data_mounting |>
+  group_by(Type, Site, Transect, Subsample, Residus) |> 
+  summarise(n_ind=n(), n_res=n_distinct(yes$Residus))  
+
+
+#RAREFACTION EXERCISE WITH DATA WITH FAKE SPECIES NAME
+##Examples
+data(bird) 
+out <- iNEXT(bird, datatype="abundance") 
+ggiNEXT(out)
+
+data(ant)
+data(ciliates)
+data(spider)
+#with my data
+install.packages("iNEXT")
+library(iNEXT)
+library(ggplot2)
+library(dplyr)
+inext_data <- read.csv("C:/Users/antman/Documents/Data R/data_rare.csv")
+data2 <- inext_data[, -1]
+maize <- iNEXT(data2, q=0, datatype="abundance")
+ggiNEXT(maize, type=1)
+
+type2 <- iNEXT(data2, q=c(0,1,2), datatype="abundance")
+ggiNEXT(type2, type=3, facet.var = "order")
+
+
+
+
+
+
