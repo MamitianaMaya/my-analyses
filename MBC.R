@@ -85,16 +85,19 @@ library(dplyr)
 library(ggplot2)
 
 #import data
-data <- read.csv("C:/Users/antman/Documents/Data/data.csv")
+data <- read.csv("C:/Users/antman/Documents/Data R/data_maya.csv")
 
 #Look at the number of rows and columns
 dim(data)
 
-#Calculate the number of individuals and genera per transect
+#Calculate the number of individuals and genera per subfamilies
 d1 <- data  |>
-  group_by(Collectors.code) |> 
-  summarise(n_ind=n(),n_gen=n_distinct(Genres))
-
+  group_by(Type,Subfamilies) |> 
+  summarise(n_ind=n(),n_gen=n_distinct(Genres),n_sp=n_distinct(SpeciesName))
+#Calculate the number of genera, sp, individuals per Type and site
+Nind <- data  |>
+  group_by(Type, Site) |> 
+  summarise(n_gen=n_distinct(Genres),n_sp=n_distinct(SpeciesName), n_ind=n())
 #Calculate the number of individuals and genera per transect per pitfall
 d2 <- data  |>  
   group_by(Collectors.code, subsample)  |>
@@ -214,8 +217,7 @@ library(dplyr)
 inext_data <- read.csv("C:/Users/antman/Documents/Data R/data_rare.csv")
 data2 <- inext_data[, -1]
 maize <- iNEXT(data2, q=0, datatype="abundance")
-ggiNEXT(maize, type=1)
-
+ggiNEXT(maize, type=3)
 type2 <- iNEXT(data2, q=c(0,1,2), datatype="abundance")
 ggiNEXT(type2, type=3, facet.var = "order")
 
