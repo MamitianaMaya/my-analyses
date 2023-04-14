@@ -221,8 +221,79 @@ ggiNEXT(maize, type=3)
 type2 <- iNEXT(data2, q=c(0,1,2), datatype="abundance")
 ggiNEXT(type2, type=3, facet.var = "order")
 
+#14/04/2023
+#DataAnalyses
+library(dplyr)
+library(ggplot2)
+data <- read.csv("C:/Users/antman/Documents/Data R/real_data.csv")
+
+#Calculate the number of individuals and genera per subfamilies
+table1 <- data  |>
+  group_by(Type, Site) |> 
+  summarise(n_sf=n_distinct(Subfamilies), n_gen=n_distinct(Genres),n_sp=n_distinct(SpeciesName),n_ind=n())
+
+table2 <- data  |>
+  group_by(Type) |> 
+  summarise(n_sf=n_distinct(Subfamilies), n_gen=n_distinct(Genres),n_sp=n_distinct(SpeciesName),n_ind=n())
+
+table3 <- data  |>
+  group_by(Type, Site, Transect) |> 
+  summarise(n_sf=n_distinct(Subfamilies), n_gen=n_distinct(Genres),n_sp=n_distinct(SpeciesName),n_ind=n())
+
+write.csv(table3,"C:/Users/antman/Documents/Data R/Imported file/table3.csv")
+tableau <- read.csv("C:/Users/antman/Documents/Data R/Imported file/table3.csv")
+dim(table2)
+
+####Calculation of average, min and max Genera per transect
+
+data_mounting <- read.csv("C:/Users/antman/Documents/Data R/real_data.csv")
+str(data_mounting)
+
+Ngenera <- data_mounting |>
+  group_by(Type, Site, Transect)|>
+  summarise(n_gen=n_distinct(Genera))
+write.csv(Ngenera,"C:/Users/antman/Documents/Data R/Imported file/Ngenera.csv")
+
+mean(Ngenera$n_gen)
+
+
+Genera <- Ngenre|>
+  group_by(Type, Site) |>
+  summarise(mean(n_gen), min(n_gen), max(n_gen))
+write.csv(Genera,"C:/Users/antman/Documents/Data R/Imported file/Genera.csv")
+
+####Calculation of average, min and max Species per transect
+Nspecies <- data_mounting |>
+  group_by(Type, Site, Transect)|>
+  summarise(n_sp=n_distinct(SpeciesName))
+write.csv(Nspecies,"C:/Users/antman/Documents/Data R/Imported file/Nspecies.csv")
+
+mean(Nspecies$n_sp)
+
+
+Species <- Nspecies|>
+  group_by(Type, Site) |>
+  summarise(mean(n_sp), min(n_sp), max(n_sp))
+write.csv(Species,"C:/Users/antman/Documents/Data R/Imported file/Species.csv")
+
+####Calculation of average, min and max Individuals per transect
+Nindividuals <- data_mounting |>
+  group_by(Type, Site, Transect)|>
+  summarise(n_ind=n())
+write.csv(Nindividuals,"C:/Users/antman/Documents/Data R/Imported file/Nindividuals.csv")
+
+mean(Nindividuals$n_ind)
+
+
+Individuals <- Nindividuals|>
+  group_by(Type, Site) |>
+  summarise(mean(n_ind), min(n_ind), max(n_ind))
+write.csv(Individuals,"C:/Users/antman/Documents/Data R/Imported file/Individuals.csv")
 
 
 
 
+
+
+  
 
