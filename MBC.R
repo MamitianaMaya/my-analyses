@@ -200,7 +200,7 @@ Total <- data_mounting |>
   summarise(n_ind=n(), n_res=n_distinct(yes$Residus))  
 
 
-#RAREFACTION EXERCISE WITH DATA WITH FAKE SPECIES NAME
+#RAREFACTION EXERCISE WITH DATA + FAKE SPECIES NAME
 ##Examples
 data(bird) 
 out <- iNEXT(bird, datatype="abundance") 
@@ -221,31 +221,39 @@ ggiNEXT(maize, type=3)
 type2 <- iNEXT(data2, q=c(0,1,2), datatype="abundance")
 ggiNEXT(type2, type=3, facet.var = "order")
 
-#14/04/2023
-#DataAnalyses
+                                #14/04/2023
+                           #####DataAnalyses
 library(dplyr)
 library(ggplot2)
 data <- read.csv("C:/Users/antman/Documents/Data R/real_data.csv")
 
-#Calculate the number of individuals and genera per subfamilies
+####Calculate the number of subfamilies, genera, species and individuals 
+#per type and site
 table1 <- data  |>
   group_by(Type, Site) |> 
-  summarise(n_sf=n_distinct(Subfamilies), n_gen=n_distinct(Genres),n_sp=n_distinct(SpeciesName),n_ind=n())
+  summarise(n_sf=n_distinct(Subfamilies), n_gen=n_distinct(Genera),n_sp=n_distinct(SpeciesName),n_ind=n())
+write.csv(table1,"C:/Users/antman/Documents/Data R/Imported file/table1.csv")
 
+#per type
 table2 <- data  |>
   group_by(Type) |> 
-  summarise(n_sf=n_distinct(Subfamilies), n_gen=n_distinct(Genres),n_sp=n_distinct(SpeciesName),n_ind=n())
+  summarise(n_sf=n_distinct(Subfamilies), n_gen=n_distinct(Genera),n_sp=n_distinct(SpeciesName),n_ind=n())
 
+#per type, site and transect
 table3 <- data  |>
   group_by(Type, Site, Transect) |> 
-  summarise(n_sf=n_distinct(Subfamilies), n_gen=n_distinct(Genres),n_sp=n_distinct(SpeciesName),n_ind=n())
-
+  summarise(n_sf=n_distinct(Subfamilies), n_gen=n_distinct(Genera),n_sp=n_distinct(SpeciesName),n_ind=n())
 write.csv(table3,"C:/Users/antman/Documents/Data R/Imported file/table3.csv")
-tableau <- read.csv("C:/Users/antman/Documents/Data R/Imported file/table3.csv")
-dim(table2)
 
 ####Calculation of average, min and max Genera per transect
+##Meth1
+tableau <- read.csv("C:/Users/antman/Documents/Data R/Imported file/table3.csv")
+Tab <- tableau|>
+  group_by(Type, Site)|>
+  summarise(n_gen, mean(n_gen), min(n_gen), max(n_gen), n_sp, mean(n_sp), min(n_sp), max(n_sp), n_ind, mean(n_ind), min(n_ind), max(n_ind))
+write.csv(Tab,"C:/Users/antman/Documents/Data R/Imported file/tableau.csv")
 
+##Meth2
 data_mounting <- read.csv("C:/Users/antman/Documents/Data R/real_data.csv")
 str(data_mounting)
 
@@ -255,7 +263,8 @@ Ngenera <- data_mounting |>
 write.csv(Ngenera,"C:/Users/antman/Documents/Data R/Imported file/Ngenera.csv")
 
 mean(Ngenera$n_gen)
-
+min(Ngenera$n_gen)
+max(Ngenera$n_gen)
 
 Genera <- Ngenre|>
   group_by(Type, Site) |>
@@ -269,7 +278,8 @@ Nspecies <- data_mounting |>
 write.csv(Nspecies,"C:/Users/antman/Documents/Data R/Imported file/Nspecies.csv")
 
 mean(Nspecies$n_sp)
-
+min(Nspecies$n_sp)
+max(Nspecies$n_sp)
 
 Species <- Nspecies|>
   group_by(Type, Site) |>
@@ -283,17 +293,66 @@ Nindividuals <- data_mounting |>
 write.csv(Nindividuals,"C:/Users/antman/Documents/Data R/Imported file/Nindividuals.csv")
 
 mean(Nindividuals$n_ind)
-
+min(Nindividuals$n_ind)
+max(Nindividuals$n_ind)
 
 Individuals <- Nindividuals|>
   group_by(Type, Site) |>
   summarise(mean(n_ind), min(n_ind), max(n_ind))
 write.csv(Individuals,"C:/Users/antman/Documents/Data R/Imported file/Individuals.csv")
 
+####Figure
+library(dplyr)
+library(ggplot2)
+data <- read.csv("C:/Users/antman/Documents/Data R/real_data.csv")
 
+####Calculation number of individuals per Species per type of culture
+table4 <- data  |>
+  group_by(Type, SpeciesName) |> 
+  summarise(n_ind=n())
+write.csv(table4,"C:/Users/antman/Documents/Data R/Imported file/table4.csv")
 
+max(table4$n_ind)
+mean(table4$n_ind)
+#Plot the number of individuals per Species per type of culture
 
+##convert SpeciesName as factor 
+table4$SpeciesName <- as.factor(table4$SpeciesName)
+table4$Type <- as.factor((table4$Type))
 
+ggplot(table4, aes(x = SpeciesName, y = n_ind, fill=Type))+
+  geom_col(width = 0.3)+
+  scale_fill_continuous(guide= guide_legend(label.position = "left"))+
+  scale_fill_manual(breaks= c("Con", "Rot3", "Rot6"), values =c("orange", "blue", "red"))+
+  ggtitle("Number of individuals per species for each type of culture")+
+  scale_y_continuous(name="Number of individuals", breaks = seq(0, 200, 20))+
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.text.x =element_text(color="black", angle= 60, size = 9),
+        axis.line.x = element_blank(),
+        panel.background = element_blank(),
+        axis.line.y= element_line(color = "black"),
+        legend.key = element_rect(fill = "transparent"))
+
+table5 <- data|>
+  group_by(Type, Site, SpeciesName) |> 
+  summarise(n_ind=n())
+write.csv(table5,"C:/Users/antman/Documents/Data R/Imported file/table5.csv")
+min(table5$n_ind)
+max(table5$n_ind)
+mean(table5$n_ind)
+
+ggplot(table5, aes(x = SpeciesName, y = n_ind, fill=Site))+
+  geom_col(width = 0.3)+
+  scale_y_continuous(name="Number of individuals", breaks = seq(0, 200, 20))+
+  ggtitle("Number of individuals per species for sites")+
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.text.x =element_text(color="black", angle= 60, size = 9),
+        axis.line.x = element_blank(),
+        panel.background = element_blank(),
+        axis.line.y= element_line(color = "black"),
+        legend.key = element_rect(fill = "transparent"))
 
   
-
+##doesn't match
+ggplot(table4, aes(x = SpeciesName, fill = Type)) +
+         geom_bar()
