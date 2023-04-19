@@ -301,12 +301,18 @@ Individuals <- Nindividuals|>
   summarise(mean(n_ind), min(n_ind), max(n_ind))
 write.csv(Individuals,"C:/Users/antman/Documents/Data R/Imported file/Individuals.csv")
 
-####Figure
+####Figures
+# 1) Install packages
 library(dplyr)
 library(ggplot2)
+library(tidyverse)
+library(forcats)
+
+# 2) Import the data 
 data <- read.csv("C:/Users/antman/Documents/Data R/real_data.csv")
 
-####Calculation number of individuals per Species per type of culture
+#### For figure 1
+## 1) Calculation number of individuals per Species per type of culture
 table4 <- data  |>
   group_by(Type, SpeciesName) |> 
   summarise(n_ind=n())
@@ -314,43 +320,81 @@ write.csv(table4,"C:/Users/antman/Documents/Data R/Imported file/table4.csv")
 
 max(table4$n_ind)
 mean(table4$n_ind)
-#Plot the number of individuals per Species per type of culture
+min(table4$n_ind)
+max(table4$SpeciesName)
 
-##convert SpeciesName as factor 
-table4$SpeciesName <- as.factor(table4$SpeciesName)
+## 2) convert SpeciesName / Type as factor 
+table4$SpeciesName <- as_factor(table4$SpeciesName)
 table4$Type <- as.factor((table4$Type))
 
-ggplot(table4, aes(x = SpeciesName, y = n_ind, fill=Type))+
-  geom_col(width = 0.3)+
+## 3) Plot the data to show the distribution of the species in the 3 type of land use(histogram)
+fig1 <- ggplot(table4, aes(x= reorder(SpeciesName, -n_ind), y = n_ind, yend=0, fill=Type))+
+  geom_col(position="stack" , width = 0.9)+
   scale_fill_continuous(guide= guide_legend(label.position = "left"))+
-  scale_fill_manual(breaks= c("Con", "Rot3", "Rot6"), values =c("orange", "blue", "red"))+
+  scale_fill_manual(breaks= c("Control", "Maize 3", "Maize 6"), values =c("black", "blue", "red"))+
   ggtitle("Number of individuals per species for each type of culture")+
-  scale_y_continuous(name="Number of individuals", breaks = seq(0, 200, 20))+
-  theme(plot.title = element_text(hjust = 0.5),
-        axis.text.x =element_text(color="black", angle= 60, size = 9),
+  scale_x_discrete(name = "Species")+
+  scale_y_continuous(name="Number of individuals", breaks = seq(0, 200, 20), limits = c(0, 200), expand = c(0, 0))+
+  theme(plot.title = element_text(hjust = 0),
+        axis.text.x =element_text(color="black", angle = 60, hjust=1, size = 10, margin = margin(t=0)),
         axis.line.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.title.x = element_text(size = 12, face = "bold"),
         panel.background = element_blank(),
-        axis.line.y= element_line(color = "black"),
-        legend.key = element_rect(fill = "transparent"))
+        axis.line.y= element_line(),
+        axis.text.y = element_text(size = 9),
+        axis.title.y = element_text(size = 10, face = "bold"),
+        legend.position = "top",
+        legend.title = element_blank())
 
-table5 <- data|>
-  group_by(Type, Site, SpeciesName) |> 
+   ### Tsy asiana elanelana entre ny bars sy ny axe(y)
+theme()+expand = c(0, 0)
+
+## 4) Save the plot into my device   
+ggsave("C:/Users/antman/Documents/Plots from R/Figures/Fig_type/fig_type.png", fig1, dpi = 300, width = 15, height = 11, units = c("cm"))
+ggsave("C:/Users/antman/Documents/Plots from R/Figures/Fig_type/fig_type.pdf", fig1)
+
+#### For Figure 2
+# 1) Import data 
+data2 <- read.csv("C:/Users/antman/Documents/Data R/sites_data.csv")
+# 2) To get the data.frame for plot
+table5 <- data2|>
+  group_by(Sites, SpeciesName) |> 
   summarise(n_ind=n())
+# 3) export the data.frame to device
 write.csv(table5,"C:/Users/antman/Documents/Data R/Imported file/table5.csv")
+# 4) Some calculations
 min(table5$n_ind)
 max(table5$n_ind)
 mean(table5$n_ind)
 
-ggplot(table5, aes(x = SpeciesName, y = n_ind, fill=Site))+
-  geom_col(width = 0.3)+
-  scale_y_continuous(name="Number of individuals", breaks = seq(0, 200, 20))+
-  ggtitle("Number of individuals per species for sites")+
-  theme(plot.title = element_text(hjust = 0.5),
-        axis.text.x =element_text(color="black", angle= 60, size = 9),
+# 5) Convert as factor
+table5$SpeciesName <- as.factor(table5$SpeciesName)
+table5$Sites <- as.factor(table5$Sites)
+
+# 6) Plot the distribution of species in the different sites
+fig2 <- ggplot(table5, aes(x= reorder(SpeciesName, -n_ind), y = n_ind, yend=0, fill=Sites))+
+  geom_col(position="stack" , width = 0.9)+
+  scale_fill_continuous(guide= guide_legend(label.position = "left"))+
+  scale_fill_manual(breaks= c("Control", "Maize 3 site1", "Maize 3 site2", "Maize 3 site3", "Maize 6 site1", "Maize 6 site2", "Maize 6 site3"), values =c("black", "skyblue", "royalblue", "darkblue", "pink", "red", "darkred"))+
+  ggtitle("Number of individuals per species for each site")+xlab("Species")+ylab("Number of individuals")+
+  scale_y_continuous(breaks = seq(0, 200, 20), limits = c(0, 200), expand = c(0, 0))+
+  theme(plot.title = element_text(hjust = 0),
+        axis.text.x =element_text(color="black", angle = 60, hjust=1, size = 10, margin = margin(t=0)),
         axis.line.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.title.x = element_text(size = 12, face = "bold"),
         panel.background = element_blank(),
-        axis.line.y= element_line(color = "black"),
-        legend.key = element_rect(fill = "transparent"))
+        axis.line.y= element_line(),
+        axis.text.y = element_text(size = 9),
+        axis.title.y = element_text(size=10, face = "bold"),
+        legend.position = "right",
+        legend.title = element_text(face = "bold"))
+
+# 7) Save the plots
+ggsave("C:/Users/antman/Documents/Plots from R/Figures/Fig_sites/fig_sites.png", fig2, dpi = 300, width = 15, height = 11, units = c("cm"))
+ggsave("C:/Users/antman/Documents/Plots from R/Figures/Fig_sites/fig_sites.pdf", fig2)
+
 
   
 ##doesn't match
