@@ -351,7 +351,7 @@ fig1 <- ggplot(table4, aes(x= reorder(SpeciesName, -n_ind), y = n_ind, yend=0, f
 theme()+expand = c(0, 0)
 
 ## 4) Save the plot into my device   
-ggsave("C:/Users/antman/Documents/Plots from R/Figures/Fig_type/fig_type.png", fig1, dpi = 300, width = 15, height = 11, units = c("cm"))
+ggsave("C:/Users/antman/Documents/Plots from R/Figures/Fig_type/fig_type.png", fig1, dpi = 300, width = 15, height = 13, units = c("cm"))
 ggsave("C:/Users/antman/Documents/Plots from R/Figures/Fig_type/fig_type.pdf", fig1)
 
 #### For Figure 2
@@ -379,7 +379,7 @@ fig2 <- ggplot(table5, aes(x= reorder(SpeciesName, -n_ind), y = n_ind, yend=0, f
   scale_fill_manual(breaks= c("Control", "Maize 3 site1", "Maize 3 site2", "Maize 3 site3", "Maize 6 site1", "Maize 6 site2", "Maize 6 site3"), values =c("black", "skyblue", "royalblue", "darkblue", "pink", "red", "darkred"))+
   ggtitle("Number of individuals per species for each site")+xlab("Species")+ylab("Number of individuals")+
   scale_y_continuous(breaks = seq(0, 200, 20), limits = c(0, 200), expand = c(0, 0))+
-  theme(plot.title = element_text(hjust = 0),
+  theme(plot.title = element_text(hjust = 1, size = 12),
         axis.text.x =element_text(color="black", angle = 60, hjust=1, size = 10, margin = margin(t=0)),
         axis.line.x = element_blank(),
         axis.ticks.x = element_blank(),
