@@ -312,7 +312,7 @@ library(forcats)
 data <- read.csv("C:/Users/antman/Documents/Data R/real_data.csv")
 
 #### For figure 1
-## 1) Calculation number of individuals per Species per type of culture
+## 1) Calculation number of individuals per Species per type of culture- data frame used to plot the results
 table4 <- data  |>
   group_by(Type, SpeciesName) |> 
   summarise(n_ind=n())
