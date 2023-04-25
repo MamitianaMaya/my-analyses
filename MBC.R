@@ -227,41 +227,47 @@ library(dplyr)
 library(ggplot2)
 library(tidyverse)
 library(tidyr)
-data <- read.csv("C:/Users/antman/Documents/Data R/real_data.csv")
-View(data)
-str(data)
+data1 <- read.csv("C:/Users/antman/Documents/Data R/For_Species.csv")
+View(data1)
+str(data1)
 
 ####Add a new column with the short Species names to the data frame
-new_data <- data %>% 
+new_data <- data1 %>% 
 mutate(shortSp=paste(substr(Genera, 1, 3), substr(Species, 1, 3), sep="_"))
+write.csv(new_data,"C:/Users/antman/Documents/Data R/Imported file/new_data.csv")
 
 ###Calculate the number of Species per type of culture
-data_Sp_Type <- new_data %>% select(Type, Species, shortSp) |>
+data_Sp_Type <- new_data |>
   group_by(Type, shortSp)|>
   summarise(n_sp=n())|>
   pivot_wider(names_from = shortSp, values_from = n_sp, values_fill = 0)
 write.csv(data_Sp_Type,"C:/Users/antman/Documents/Data R/Imported file/data_Sp_Type.csv")
 
+###Code for picking variables from the data frame
+....(data) %>% select(Type, Site, Species, shortSp)
+
 ###Calculate the number of Species per site
-data_Sp_Site <- new_data %>% select(Type, Site, Species, shortSp) |>
-  group_by(Type, Site, shortSp)|>
+data_Sp_Site <- new_data  |>
+  group_by(Type, Site, shortSp) |>
   summarise(n_sp=n())|>
   pivot_wider(names_from = shortSp, values_from = n_sp, values_fill = 0)
 write.csv(data_Sp_Site,"C:/Users/antman/Documents/Data R/Imported file/data_Sp_Site.csv")
 
+
+data2 <- read.csv("C:/Users/antman/Documents/Data R/real_data.csv")
 ####Calculate the number of subfamilies, genera, species and individuals 
 #per type and site
-table1 <- data  |>
+table1 <- data2  |>
   group_by(Type, Site) |> 
   summarise(n_sf=n_distinct(Subfamilies), n_gen=n_distinct(Genera),n_sp=n_distinct(Species),n_ind=n())
 write.csv(table1,"C:/Users/antman/Documents/Data R/Imported file/table1.csv")
 #per type
-table2 <- data  |>
+table2 <- data2  |>
   group_by(Type) |> 
   summarise(n_sf=n_distinct(Subfamilies), n_gen=n_distinct(Genera),n_sp=n_distinct(Species),n_ind=n())
 
 #per type, site and transect
-table3 <- data  |>
+table3 <- data2  |>
   group_by(Type, Site, Transect) |> 
   summarise(n_sf=n_distinct(Subfamilies), n_gen=n_distinct(Genera),n_sp=n_distinct(Species),n_ind=n())
 write.csv(table3,"C:/Users/antman/Documents/Data R/Imported file/table3.csv")
@@ -330,11 +336,11 @@ library(tidyverse)
 library(forcats)
 
 # 2) Import the data 
-data <- read.csv("C:/Users/antman/Documents/Data R/real_data.csv")
+data2 <- read.csv("C:/Users/antman/Documents/Data R/real_data.csv")
 
 #### For figure 1
 ## 1) Calculation number of individuals per Species per type of culture- data frame used to plot the results
-table4 <- data  |>
+table4 <- data2  |>
   group_by(Type, Species) |> 
   summarise(n_ind=n())
 write.csv(table4,"C:/Users/antman/Documents/Data R/Imported file/table4.csv")
