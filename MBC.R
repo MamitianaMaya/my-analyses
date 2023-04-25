@@ -225,24 +225,45 @@ ggiNEXT(type2, type=3, facet.var = "order")
                            #####DataAnalyses
 library(dplyr)
 library(ggplot2)
+library(tidyverse)
+library(tidyr)
 data <- read.csv("C:/Users/antman/Documents/Data R/real_data.csv")
+View(data)
+str(data)
+
+####Add a new column with the short Species names to the data frame
+new_data <- data %>% 
+mutate(shortSp=paste(substr(Genera, 1, 3), substr(Species, 1, 3), sep="_"))
+
+###Calculate the number of Species per type of culture
+data_Sp_Type <- new_data %>% select(Type, Species, shortSp) |>
+  group_by(Type, shortSp)|>
+  summarise(n_sp=n())|>
+  pivot_wider(names_from = shortSp, values_from = n_sp, values_fill = 0)
+write.csv(data_Sp_Type,"C:/Users/antman/Documents/Data R/Imported file/data_Sp_Type.csv")
+
+###Calculate the number of Species per site
+data_Sp_Site <- new_data %>% select(Type, Site, Species, shortSp) |>
+  group_by(Type, Site, shortSp)|>
+  summarise(n_sp=n())|>
+  pivot_wider(names_from = shortSp, values_from = n_sp, values_fill = 0)
+write.csv(data_Sp_Site,"C:/Users/antman/Documents/Data R/Imported file/data_Sp_Site.csv")
 
 ####Calculate the number of subfamilies, genera, species and individuals 
 #per type and site
 table1 <- data  |>
   group_by(Type, Site) |> 
-  summarise(n_sf=n_distinct(Subfamilies), n_gen=n_distinct(Genera),n_sp=n_distinct(SpeciesName),n_ind=n())
+  summarise(n_sf=n_distinct(Subfamilies), n_gen=n_distinct(Genera),n_sp=n_distinct(Species),n_ind=n())
 write.csv(table1,"C:/Users/antman/Documents/Data R/Imported file/table1.csv")
-
 #per type
 table2 <- data  |>
   group_by(Type) |> 
-  summarise(n_sf=n_distinct(Subfamilies), n_gen=n_distinct(Genera),n_sp=n_distinct(SpeciesName),n_ind=n())
+  summarise(n_sf=n_distinct(Subfamilies), n_gen=n_distinct(Genera),n_sp=n_distinct(Species),n_ind=n())
 
 #per type, site and transect
 table3 <- data  |>
   group_by(Type, Site, Transect) |> 
-  summarise(n_sf=n_distinct(Subfamilies), n_gen=n_distinct(Genera),n_sp=n_distinct(SpeciesName),n_ind=n())
+  summarise(n_sf=n_distinct(Subfamilies), n_gen=n_distinct(Genera),n_sp=n_distinct(Species),n_ind=n())
 write.csv(table3,"C:/Users/antman/Documents/Data R/Imported file/table3.csv")
 
 ####Calculation of average, min and max Genera per transect
@@ -274,7 +295,7 @@ write.csv(Genera,"C:/Users/antman/Documents/Data R/Imported file/Genera.csv")
 ####Calculation of average, min and max Species per transect
 Nspecies <- data_mounting |>
   group_by(Type, Site, Transect)|>
-  summarise(n_sp=n_distinct(SpeciesName))
+  summarise(n_sp=n_distinct(Species))
 write.csv(Nspecies,"C:/Users/antman/Documents/Data R/Imported file/Nspecies.csv")
 
 mean(Nspecies$n_sp)
@@ -314,21 +335,21 @@ data <- read.csv("C:/Users/antman/Documents/Data R/real_data.csv")
 #### For figure 1
 ## 1) Calculation number of individuals per Species per type of culture- data frame used to plot the results
 table4 <- data  |>
-  group_by(Type, SpeciesName) |> 
+  group_by(Type, Species) |> 
   summarise(n_ind=n())
 write.csv(table4,"C:/Users/antman/Documents/Data R/Imported file/table4.csv")
 
 max(table4$n_ind)
 mean(table4$n_ind)
 min(table4$n_ind)
-max(table4$SpeciesName)
+max(table4$Species)
 
 ## 2) convert SpeciesName / Type as factor 
 table4$SpeciesName <- as_factor(table4$SpeciesName)
 table4$Type <- as.factor((table4$Type))
 
 ## 3) Plot the data to show the distribution of the species in the 3 type of land use(histogram)
-fig1 <- ggplot(table4, aes(x= reorder(SpeciesName, -n_ind), y = n_ind, yend=0, fill=Type))+
+fig1 <- ggplot(table4, aes(x= reorder(Species, -n_ind), y = n_ind, yend=0, fill=Type))+
   geom_col(position="stack" , width = 0.9)+
   scale_fill_continuous(guide= guide_legend(label.position = "left"))+
   scale_fill_manual(breaks= c("Control", "Maize 3", "Maize 6"), values =c("black", "blue", "red"))+
@@ -359,7 +380,7 @@ ggsave("C:/Users/antman/Documents/Plots from R/Figures/Fig_type/fig_type.pdf", f
 data2 <- read.csv("C:/Users/antman/Documents/Data R/sites_data.csv")
 # 2) To get the data.frame for plot
 table5 <- data2|>
-  group_by(Sites, SpeciesName) |> 
+  group_by(Sites, Species) |> 
   summarise(n_ind=n())
 # 3) export the data.frame to device
 write.csv(table5,"C:/Users/antman/Documents/Data R/Imported file/table5.csv")
@@ -369,11 +390,11 @@ max(table5$n_ind)
 mean(table5$n_ind)
 
 # 5) Convert as factor
-table5$SpeciesName <- as.factor(table5$SpeciesName)
+table5$SpeciesName <- as.factor(table5$Species)
 table5$Sites <- as.factor(table5$Sites)
 
 # 6) Plot the distribution of species in the different sites
-fig2 <- ggplot(table5, aes(x= reorder(SpeciesName, -n_ind), y = n_ind, yend=0, fill=Sites))+
+fig2 <- ggplot(table5, aes(x= reorder(Species, -n_ind), y = n_ind, yend=0, fill=Sites))+
   geom_col(position="stack" , width = 0.9)+
   scale_fill_continuous(guide= guide_legend(label.position = "left"))+
   scale_fill_manual(breaks= c("Control", "Maize 3 site1", "Maize 3 site2", "Maize 3 site3", "Maize 6 site1", "Maize 6 site2", "Maize 6 site3"), values =c("black", "skyblue", "royalblue", "darkblue", "pink", "red", "darkred"))+
@@ -398,5 +419,5 @@ ggsave("C:/Users/antman/Documents/Plots from R/Figures/Fig_sites/fig_sites.pdf",
 
   
 ##doesn't match
-ggplot(table4, aes(x = SpeciesName, fill = Type)) +
+ggplot(table4, aes(x = Species, fill = Type)) +
          geom_bar()
