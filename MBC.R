@@ -351,7 +351,7 @@ min(table4$n_ind)
 max(table4$Species)
 
 ## 2) convert SpeciesName / Type as factor 
-table4$SpeciesName <- as_factor(table4$SpeciesName)
+table4$Species <- as_factor(table4$Species)
 table4$Type <- as.factor((table4$Type))
 
 ## 3) Plot the data to show the distribution of the species in the 3 type of land use(histogram)
@@ -396,7 +396,7 @@ max(table5$n_ind)
 mean(table5$n_ind)
 
 # 5) Convert as factor
-table5$SpeciesName <- as.factor(table5$Species)
+table5$Species <- as.factor(table5$Species)
 table5$Sites <- as.factor(table5$Sites)
 
 # 6) Plot the distribution of species in the different sites
@@ -419,7 +419,7 @@ fig2 <- ggplot(table5, aes(x= reorder(Species, -n_ind), y = n_ind, yend=0, fill=
         legend.title = element_text(face = "bold"))
 
 # 7) Save the plots
-ggsave("C:/Users/antman/Documents/Plots from R/Figures/Fig_sites/fig_sites.png", fig2, dpi = 300, width = 15, height = 11, units = c("cm"))
+ggsave("C:/Users/antman/Documents/Plots from R/Figures/Fig_sites/fig_sites.png", fig2, dpi = 300, width = 15, height = 13, units = c("cm"))
 ggsave("C:/Users/antman/Documents/Plots from R/Figures/Fig_sites/fig_sites.pdf", fig2)
 
 
@@ -427,3 +427,42 @@ ggsave("C:/Users/antman/Documents/Plots from R/Figures/Fig_sites/fig_sites.pdf",
 ##doesn't match
 ggplot(table4, aes(x = Species, fill = Type)) +
          geom_bar()
+
+      ###26/04/2023
+#####Table and figure for species richness
+library(dplyr)
+library(ggplot2)
+data_rich <- read.csv("C:/Users/antman/Documents/Data R/real_data.csv")
+table6 <- data_rich|>
+  group_by(Type)|>
+  summarise(n_sp=n_distinct(Species))
+
+fig3 <- ggplot(table6, aes(x= Type, y=n_sp, yend=0, fill=Type))+
+  geom_col(width = 0.8)+
+  scale_y_continuous(breaks = seq(0, 15, 5), limits = c(0, 15), expand = c(0, 0))+
+  ggtitle("Ant species richness within the type of land use")+ xlab("Type of land use")+ ylab("Ant species richness")+
+  scale_fill_manual(values=c("black", "blue", "red"))+
+  theme(panel.background = element_blank(),
+        axis.line.x = element_blank(),
+        axis.line.y = element_line(),
+        axis.ticks.x=element_blank())
+ 
+ggsave("C:/Users/antman/Documents/Plots from R/Figures/Fig_richness/fig3.png", fig3, dpi = 300, width = 15, height = 13, units = c("cm"))
+ggsave("C:/Users/antman/Documents/Plots from R/Figures/Fig_richness/fig3.pdf", fig3)
+
+####Table and figure for ant species abundance
+table7 <- data_rich|>
+  group_by(Type, Site, Transect)|>
+  summarise(n_ind=n())
+
+ggplot(table7, aes(x=Type, y=n_ind), fill=Type)+
+  geom_jitter(aes(color=Type), width=0.25)+
+  scale_fill_manual(values =c("black", "blue", "red"))+
+  scale_color_hue()+
+  ggtitle("Number of individuals within the type of land use")+ xlab("Type of land use")+ ylab("Number of individuals")+
+
+        
+  
+
+
+  
