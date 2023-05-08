@@ -234,7 +234,13 @@ str(data1)
 ####Add a new column with the short Species names to the data frame
 new_data <- data1 %>% 
 mutate(shortSp=paste(substr(Genera, 1, 3), substr(Species, 1, 3), sep="_"))
-write.csv(new_data,"C:/Users/antman/Documents/Data R/Imported file/new_data.csv")
+write.csv(new_data,"C:/Users/antman/Documents/Data R/Imported file/shortSp.csv")
+####The same with the data + NA
+data_NA <- read.csv("C:/Users/antman/Documents/Data R/data_maya.csv")
+d <- data_NA %>% 
+  mutate(shortSp=paste(substr(Genera, 1, 3), substr(Species, 1, 3), sep="_"))
+write.csv(d,"C:/Users/antman/Documents/Data R/Imported file/shortSp_NA.csv")
+  
 
 ###Calculate the number of Species per type of culture
 data_Sp_Type <- new_data |>
@@ -358,7 +364,7 @@ table4$Type <- as.factor((table4$Type))
 fig1 <- ggplot(table4, aes(x= reorder(Species, -n_ind), y = n_ind, yend=0, fill=Type))+
   geom_col(position="stack" , width = 0.9)+
   scale_fill_continuous(guide= guide_legend(label.position = "left"))+
-  scale_fill_manual(breaks= c("Control", "Maize 3", "Maize 6"), values =c("black", "blue", "red"))+
+  scale_fill_manual(breaks= c("Grassland", "Maize 3", "Maize 6"), values =c("black", "blue", "red"))+
   ggtitle("Number of individuals per species for each type of culture")+
   scale_x_discrete(name = "Species")+
   scale_y_continuous(name="Number of individuals", breaks = seq(0, 200, 20), limits = c(0, 200), expand = c(0, 0))+
@@ -403,7 +409,7 @@ table5$Sites <- as.factor(table5$Sites)
 fig2 <- ggplot(table5, aes(x= reorder(Species, -n_ind), y = n_ind, yend=0, fill=Sites))+
   geom_col(position="stack" , width = 0.9)+
   scale_fill_continuous(guide= guide_legend(label.position = "left"))+
-  scale_fill_manual(breaks= c("Control", "Maize 3 site1", "Maize 3 site2", "Maize 3 site3", "Maize 6 site1", "Maize 6 site2", "Maize 6 site3"), values =c("black", "skyblue", "royalblue", "darkblue", "pink", "red", "darkred"))+
+  scale_fill_manual(breaks= c("Grassland", "Maize 3 site1", "Maize 3 site2", "Maize 3 site3", "Maize 6 site1", "Maize 6 site2", "Maize 6 site3"), values =c("black", "skyblue", "royalblue", "darkblue", "pink", "red", "darkred"))+
   ggtitle("Number of individuals per species for each site")+xlab("Species")+ylab("Number of individuals")+
   scale_y_continuous(breaks = seq(0, 200, 20), limits = c(0, 200), expand = c(0, 0))+
   theme(plot.title = element_text(hjust = 1, size = 12),
@@ -455,14 +461,49 @@ table7 <- data_rich|>
   group_by(Type, Site, Transect)|>
   summarise(n_ind=n())
 
-ggplot(table7, aes(x=Type, y=n_ind), fill=Type)+
+fig4 <- ggplot(table7, aes(x=Type, y=n_ind))+
   geom_jitter(aes(color=Type), width=0.25)+
-  scale_fill_manual(values =c("black", "blue", "red"))+
-  scale_color_hue()+
-  ggtitle("Number of individuals within the type of land use")+ xlab("Type of land use")+ ylab("Number of individuals")+
+  scale_color_manual(values = c("Grassland" = "black", "Maize 3" = "blue", "Maize 6"="red"))+
+  ggtitle("Number of individuals per transect within the type of land use")+ xlab("Type of land use")+ ylab("Number of individuals")
 
-        
-  
+ggsave("C:/Users/antman/Documents/Plots from R/Figures/Fig_abundance/fig4.png", fig4, dpi = 300, width = 18, height = 12, units = c("cm"))
+ggsave("C:/Users/antman/Documents/Plots from R/Figures/Fig_abundance/fig4.pdf", fig4)      
+
+#####Rarefaction curves with my final real data
+library(iNEXT)
+library(ggplot2)
+library(dplyr)
+data_rare <- read.csv("C:/Users/antman/Documents/Data R/mydata_rare.csv")
+data2 <- data_rare[, -1]
+q0 <- iNEXT(data2, q=0, datatype="abundance")
+ggiNEXT(q0, type=1)
+ggiNEXT(q0, type=2)
+ggiNEXT(q0, type=3)
+
+##Type=1, plot the species diversity(y-axis) by the number of individuals (x-axis)
+type1 <- iNEXT(data2, q=c(0,1,2), datatype = "abundance")
+type1_1 <- ggiNEXT(type1, type = 1, facet.var = "Assemblage")
+ggsave("C:/Users/antman/Documents/Plots from R/Figures/rarefaction/Type1/type1_1.png", plot=type1_1, width =18, height = 12, units=c("cm"))
+
+type1_2 <- ggiNEXT(type1, type=1, facet.var="Order.q", color.var="Assemblage")
+ggsave("C:/Users/antman/Documents/Plots from R/Figures/rarefaction/Type1/type1_2.png", plot=type1_2, width =18, height = 12, units=c("cm"))
+
+##Type=2, plot the sample coverage (y-axis) by the number of individuals (x-axis)
+type2 <- iNEXT(data2, q=c(0,1,2), datatype = "abundance")
+type2_1 <- ggiNEXT(type2, type = 2, facet.var = "Assemblage")
+ggsave("C:/Users/antman/Documents/Plots from R/Figures/rarefaction/Type2/type2_1.png", plot=type2_1, width =18, height = 12, units=c("cm"))
+
+type2_2 <- ggiNEXT(type2, type=2, facet.var="Order.q", color.var="Assemblage")
+ggsave("C:/Users/antman/Documents/Plots from R/Figures/rarefaction/Type2/type2_2.png", plot=type2_2, width =18, height = 12, units=c("cm"))
+
+##Type=3, plot the Species diversity (y-axis) by the sample coverage (y-axis)
+type3 <- iNEXT(data2, q=c(0,1,2), datatype="abundance")
+type3_1 <- ggiNEXT(type3, type=3, facet.var = "Assemblage")
+ggsave("C:/Users/antman/Documents/Plots from R/Figures/rarefaction/Type3/type3_1.png", plot=type3_1, width =18, height = 12, units=c("cm"))
+
+type3_2 <- ggiNEXT(type3, type=1, facet.var="Order.q", color.var="Assemblage")
+ggsave("C:/Users/antman/Documents/Plots from R/Figures/rarefaction/Type3/type3_2.png", plot=type3_2, width =18, height = 12, units=c("cm"))
+
 
 
   
