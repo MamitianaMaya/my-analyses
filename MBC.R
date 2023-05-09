@@ -249,6 +249,22 @@ data_Sp_Type <- new_data |>
   pivot_wider(names_from = shortSp, values_from = n_sp, values_fill = 0)
 write.csv(data_Sp_Type,"C:/Users/antman/Documents/Data R/Imported file/data_Sp_Type.csv")
 
+####Calculate the number of endemic vs exotic Sp per type of land use (number of individuals)
+data_SpStat_Type1 <- new_data |>
+  group_by(Type, Status)|>
+  summarise(n_ind=n())|>
+  pivot_wider(names_from = Status, values_from = n_ind, values_fill = 0)
+write.csv(data_SpStat_Type1,"C:/Users/antman/Documents/Data R/Imported file/data_SpStat_Type1.csv")
+
+####Calculate the number of endemic vs exotic Sp per type of land use (number of Species)
+data_SpStat_Type2 <- new_data |>
+  group_by(Type, Status)|>
+  summarise(n_sp=n_distinct(Species))|>
+  pivot_wider(names_from = Status, values_from = n_sp, values_fill = 0)
+write.csv(data_SpStat_Type2,"C:/Users/antman/Documents/Data R/Imported file/data_SpStat_Type2.csv")
+
+
+
 ###Code for picking variables from the data frame
 ....(data) %>% select(Type, Site, Species, shortSp)
 
@@ -260,6 +276,20 @@ data_Sp_Site <- new_data  |>
 write.csv(data_Sp_Site,"C:/Users/antman/Documents/Data R/Imported file/data_Sp_Site.csv")
 
 
+###Calculate the number of endemic vs exotic Species per type of land use (number of individuals)
+data_SpStat_Site1 <- new_data  |>
+  group_by(Type, Site, Status) |>
+  summarise(n_ind=n())|>
+  pivot_wider(names_from = Status, values_from = n_ind, values_fill = 0)
+write.csv(data_SpStat_Site1,"C:/Users/antman/Documents/Data R/Imported file/data_SpStat_Site1.csv")
+
+###Calculate the number of endemic vs exotic Species per type of land use (number of Species)
+data_SpStat_Site2 <- new_data  |>
+  group_by(Type, Site, Status) |>
+  summarise(n_sp=n_distinct(Species))|>
+  pivot_wider(names_from = Status, values_from = n_sp, values_fill = 0)
+write.csv(data_SpStat_Site2,"C:/Users/antman/Documents/Data R/Imported file/data_SpStat_Site2.csv")
+
 data2 <- read.csv("C:/Users/antman/Documents/Data R/real_data.csv")
 ####Calculate the number of subfamilies, genera, species and individuals 
 #per type and site
@@ -267,6 +297,7 @@ table1 <- data2  |>
   group_by(Type, Site) |> 
   summarise(n_sf=n_distinct(Subfamilies), n_gen=n_distinct(Genera),n_sp=n_distinct(Species),n_ind=n())
 write.csv(table1,"C:/Users/antman/Documents/Data R/Imported file/table1.csv")
+
 #per type
 table2 <- data2  |>
   group_by(Type) |> 
@@ -646,7 +677,6 @@ fig8 <- ggplot(table11, aes(x= Sites, y = n_sp, yend=0, fill=Status))+
 # 7) Save the plots
 ggsave("C:/Users/antman/Documents/Plots from R/Figures/Status/sp_sites/sp_sites.png", fig8, dpi = 300, width = 15, height = 13, units = c("cm"))
 ggsave("C:/Users/antman/Documents/Plots from R/Figures/Status/sp_sites/sp_sites.pdf", fig8)
-
 
 
 #####Rarefaction curves with my final real data
