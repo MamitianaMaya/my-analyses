@@ -394,6 +394,7 @@ data2 <- read.csv("C:/Users/antman/Documents/Data R/sites_data.csv")
 table5 <- data2|>
   group_by(Sites, Species) |> 
   summarise(n_ind=n())
+
 # 3) export the data.frame to device
 write.csv(table5,"C:/Users/antman/Documents/Data R/Imported file/table5.csv")
 # 4) Some calculations
@@ -495,7 +496,7 @@ max(table8$n_ind)
 table8$Status <- as_factor(table8$Status)
 table8$Type <- as.factor((table8$Type))
 
-## 3) Plot the data to show the distribution of the species in the 3 type of land use(histogram)
+## 3) Plot the data to show the status of the species in the 3 type of land use(histogram)
 fig5 <- ggplot(table8, aes(x= reorder(Type, n_ind), y = n_ind, yend=0, fill=Status))+
   geom_col(position="stack" , width = 0.9)+
   scale_fill_continuous(guide= guide_legend(label.position = "left"))+
@@ -536,7 +537,7 @@ min(table9$n_sp)
 table9$Status <- as_factor(table9$Status)
 table9$Type <- as.factor((table9$Type))
 
-## 3) Plot the data to show the distribution of the species in the 3 type of land use(histogram)
+## 3) Plot the data to show the status of the species in the 3 type of land use(histogram)
 fig6 <- ggplot(table9, aes(x= reorder(Type, -n_sp), y = n_sp, yend=0, fill=Status))+
   geom_col(position="stack" , width = 0.9)+
   scale_fill_continuous(guide= guide_legend(label.position = "left"))+
@@ -559,6 +560,94 @@ fig6 <- ggplot(table9, aes(x= reorder(Type, -n_sp), y = n_sp, yend=0, fill=Statu
 ## 4) Save the plot into my device   
 ggsave("C:/Users/antman/Documents/Plots from R/Figures/Status/sp_type/sp_type.png", fig6, dpi = 300, width = 15, height = 13, units = c("cm"))
 ggsave("C:/Users/antman/Documents/Plots from R/Figures/Status/sp_type/sp_type.pdf", fig6)
+
+#### For Figure 7: endemic vs exotic for each habitat (number of individuals)
+# 1) Import data 
+data_status2 <- read.csv("C:/Users/antman/Documents/Data R/sites_data.csv")
+# 2) To get the data.frame for plot
+table10 <- data_status2|>
+  group_by(Sites, Status) |> 
+  summarise(n_ind=n())
+
+# 3) export the data.frame to device
+write.csv(table10,"C:/Users/antman/Documents/Data R/Imported file/table10.csv")
+
+# 4) Some calculations
+min(table10$n_ind)
+max(table10$n_ind)
+mean(table10$n_ind)
+
+# 5) Convert as factor
+table10$Species <- as.factor(table10$Status)
+table10$Sites <- as.factor(table10$Sites)
+
+# 6) Plot the distribution of species in the different sites
+fig7 <- ggplot(table10, aes(x= Sites, y = n_ind, yend=0, fill=Status))+
+  geom_col(position="stack" , width = 0.9)+
+  scale_fill_continuous(guide= guide_legend(label.position = "left"))+
+  scale_fill_manual(breaks= c("Endemic", "Native", "Exotic", "Invasive"), values =c("green", "yellow", "purple", "red"))+
+  ggtitle("Status of species for each site")+xlab("Sites")+ylab("Number of individuals")+
+  scale_y_continuous(breaks = seq(0, 200, 20), limits = c(0, 200), expand = c(0, 0))+
+  theme(plot.title = element_text(size = 12),
+        axis.text.x =element_text(color="black", angle = 60, hjust=1, size = 10, margin = margin(t=0)),
+        axis.line.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.title.x = element_text(size = 12, face = "bold"),
+        panel.background = element_blank(),
+        axis.line.y= element_line(),
+        axis.text.y = element_text(size = 9),
+        axis.title.y = element_text(size=10, face = "bold"),
+        legend.position = "right",
+        legend.title = element_text(face = "bold"))
+
+# 7) Save the plots
+ggsave("C:/Users/antman/Documents/Plots from R/Figures/Status/ind_sites/ind_sites.png", fig7, dpi = 300, width = 15, height = 13, units = c("cm"))
+ggsave("C:/Users/antman/Documents/Plots from R/Figures/Status/ind_sites/ind_sites_sites.pdf", fig7)
+
+#### For Figure 8: endemic vs exotic for each habitat (number of Species)
+# 1) Import data 
+data_status2 <- read.csv("C:/Users/antman/Documents/Data R/sites_data.csv")
+# 2) To get the data.frame for plot
+table11 <- data_status2|>
+  group_by(Sites, Status) |> 
+  summarise(n_sp=n_distinct(Species))
+
+# 3) export the data.frame to device
+write.csv(table11,"C:/Users/antman/Documents/Data R/Imported file/table11.csv")
+
+# 4) Some calculations
+min(table11$n_sp)
+max(table11$n_sp)
+mean(table11$n_sp)
+
+# 5) Convert as factor
+table11$Status <- as.factor(table10$Status)
+table11$Sites <- as.factor(table10$Sites)
+
+# 6) Plot the distribution of species in the different sites
+fig8 <- ggplot(table11, aes(x= Sites, y = n_sp, yend=0, fill=Status))+
+  geom_col(position="stack" , width = 0.9)+
+  scale_fill_continuous(guide= guide_legend(label.position = "left"))+
+  scale_fill_manual(breaks= c("Endemic", "Native", "Exotic", "Invasive"), values =c("green", "yellow", "purple", "red"))+
+  ggtitle("Status of species for each site")+xlab("Sites")+ylab("Number of Species")+
+  scale_y_continuous(breaks = seq(0, 15, 1), limits = c(0, 15), expand = c(0, 0))+
+  theme(plot.title = element_text(size = 12),
+        axis.text.x =element_text(color="black", angle = 60, hjust=1, size = 10, margin = margin(t=0)),
+        axis.line.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.title.x = element_text(size = 12, face = "bold"),
+        panel.background = element_blank(),
+        axis.line.y= element_line(),
+        axis.text.y = element_text(size = 9),
+        axis.title.y = element_text(size=10, face = "bold"),
+        legend.position = "right",
+        legend.title = element_text(face = "bold"))
+
+# 7) Save the plots
+ggsave("C:/Users/antman/Documents/Plots from R/Figures/Status/sp_sites/sp_sites.png", fig8, dpi = 300, width = 15, height = 13, units = c("cm"))
+ggsave("C:/Users/antman/Documents/Plots from R/Figures/Status/sp_sites/sp_sites.pdf", fig8)
+
+
 
 #####Rarefaction curves with my final real data
 library(iNEXT)
