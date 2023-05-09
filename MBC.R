@@ -467,7 +467,98 @@ fig4 <- ggplot(table7, aes(x=Type, y=n_ind))+
   ggtitle("Number of individuals per transect within the type of land use")+ xlab("Type of land use")+ ylab("Number of individuals")
 
 ggsave("C:/Users/antman/Documents/Plots from R/Figures/Fig_abundance/fig4.png", fig4, dpi = 300, width = 18, height = 12, units = c("cm"))
-ggsave("C:/Users/antman/Documents/Plots from R/Figures/Fig_abundance/fig4.pdf", fig4)      
+ggsave("C:/Users/antman/Documents/Plots from R/Figures/Fig_abundance/fig4.pdf", fig4)  
+
+####Figures showing species status
+# 1) Install packages
+library(dplyr)
+library(ggplot2)
+library(tidyverse)
+library(forcats)
+
+# 2) Import the data 
+data_status <- read.csv("C:/Users/antman/Documents/Data R/data_status.csv")
+
+#### For figure 5: endemic vs exotic for each habitat type
+## 1) Calculation number of individuals per Species per type of culture- data frame used to plot the results
+table8 <- data_status  |>
+  group_by(Type, Status) |> 
+  summarise(n_ind=n())
+write.csv(table8,"C:/Users/antman/Documents/Data R/Imported file/table8.csv")
+
+max(table8$n_ind)
+mean(table8$n_ind)
+min(table8$n_ind)
+max(table8$n_ind)
+
+## 2) convert SpeciesName / Type as factor 
+table8$Status <- as_factor(table8$Status)
+table8$Type <- as.factor((table8$Type))
+
+## 3) Plot the data to show the distribution of the species in the 3 type of land use(histogram)
+fig5 <- ggplot(table8, aes(x= reorder(Type, n_ind), y = n_ind, yend=0, fill=Status))+
+  geom_col(position="stack" , width = 0.9)+
+  scale_fill_continuous(guide= guide_legend(label.position = "left"))+
+  scale_fill_manual(breaks= c("Endemic", "Native", "Exotic", "Invasive"), values =c("green", "yellow", "purple", "red"))+
+  ggtitle("Species status for each habitat type")+
+  scale_x_discrete(name = "Habitat")+
+  scale_y_continuous(name="Number of individuals", breaks = seq(0, 300, 20), limits = c(0, 300), expand = c(0, 0))+
+  theme(plot.title = element_text(hjust = 0),
+        axis.text.x =element_text(color="black", size = 10, margin = margin(t=0)),
+        axis.line.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.title.x = element_text(size = 12, face = "bold"),
+        panel.background = element_blank(),
+        axis.line.y= element_line(),
+        axis.text.y = element_text(size = 9),
+        axis.title.y = element_text(size = 10, face = "bold"),
+        legend.position = "top",
+        legend.title = element_blank())
+
+## 4) Save the plot into my device   
+ggsave("C:/Users/antman/Documents/Plots from R/Figures/Status/ind_type/ind_type.png", fig5, dpi = 300, width = 15, height = 13, units = c("cm"))
+ggsave("C:/Users/antman/Documents/Plots from R/Figures/Status/ind_type/ind_type.pdf", fig5)
+
+
+#### For figure 6: endemic vs exotic (number of species)
+## 1) Calculation number of individuals per Species per type of culture- data frame used to plot the results
+table9 <- data_status  |>
+  group_by(Type, Status) |> 
+  summarise(n_sp=n_distinct(Species))
+write.csv(table9,"C:/Users/antman/Documents/Data R/Imported file/table9.csv")
+
+max(table9$n_sp)
+mean(table9$n_sp)
+min(table9$n_sp)
+
+
+## 2) convert SpeciesName / Type as factor 
+table9$Status <- as_factor(table9$Status)
+table9$Type <- as.factor((table9$Type))
+
+## 3) Plot the data to show the distribution of the species in the 3 type of land use(histogram)
+fig6 <- ggplot(table9, aes(x= reorder(Type, -n_sp), y = n_sp, yend=0, fill=Status))+
+  geom_col(position="stack" , width = 0.9)+
+  scale_fill_continuous(guide= guide_legend(label.position = "left"))+
+  scale_fill_manual(breaks= c("Endemic", "Native", "Exotic", "Invasive"), values =c("green", "yellow", "purple", "red"))+
+  ggtitle("Species status for each habitat type")+
+  scale_x_discrete(name = "Habitat")+
+  scale_y_continuous(name="Number of Species", breaks = seq(0, 15, 1), limits = c(0, 15), expand = c(0, 0))+
+  theme(plot.title = element_text(hjust = 0),
+        axis.text.x =element_text(color="black", size = 10, margin = margin(t=0)),
+        axis.line.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.title.x = element_text(size = 12, face = "bold"),
+        panel.background = element_blank(),
+        axis.line.y= element_line(),
+        axis.text.y = element_text(size = 9),
+        axis.title.y = element_text(size = 10, face = "bold"),
+        legend.position = "top",
+        legend.title = element_blank())
+
+## 4) Save the plot into my device   
+ggsave("C:/Users/antman/Documents/Plots from R/Figures/Status/sp_type/sp_type.png", fig6, dpi = 300, width = 15, height = 13, units = c("cm"))
+ggsave("C:/Users/antman/Documents/Plots from R/Figures/Status/sp_type/sp_type.pdf", fig6)
 
 #####Rarefaction curves with my final real data
 library(iNEXT)
@@ -485,8 +576,9 @@ type1 <- iNEXT(data2, q=c(0,1,2), datatype = "abundance")
 type1_1 <- ggiNEXT(type1, type = 1, facet.var = "Assemblage")
 ggsave("C:/Users/antman/Documents/Plots from R/Figures/rarefaction/Type1/type1_1.png", plot=type1_1, width =18, height = 12, units=c("cm"))
 
-type1_2 <- ggiNEXT(type1, type=1, facet.var="Order.q", color.var="Assemblage")
+type1_2 <-ggiNEXT(type1, type=1, facet.var="Order.q", color.var="Assemblage")
 ggsave("C:/Users/antman/Documents/Plots from R/Figures/rarefaction/Type1/type1_2.png", plot=type1_2, width =18, height = 12, units=c("cm"))
+ggsave("C:/Users/antman/Documents/Plots from R/Figures/rarefaction/Type1/type1_2.pdf", plot=type1_2)
 
 ##Type=2, plot the sample coverage (y-axis) by the number of individuals (x-axis)
 type2 <- iNEXT(data2, q=c(0,1,2), datatype = "abundance")
