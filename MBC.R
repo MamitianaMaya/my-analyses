@@ -249,6 +249,7 @@ data_Sp_Type <- new_data |>
   pivot_wider(names_from = shortSp, values_from = n_sp, values_fill = 0)
 write.csv(data_Sp_Type,"C:/Users/antman/Documents/Data R/Imported file/data_Sp_Type.csv")
 
+
 ####Calculate the number of endemic vs exotic Sp per type of land use (number of individuals)
 data_SpStat_Type1 <- new_data |>
   group_by(Type, Status)|>
@@ -289,6 +290,8 @@ data_SpStat_Site2 <- new_data  |>
   summarise(n_sp=n_distinct(Species))|>
   pivot_wider(names_from = Status, values_from = n_sp, values_fill = 0)
 write.csv(data_SpStat_Site2,"C:/Users/antman/Documents/Data R/Imported file/data_SpStat_Site2.csv")
+
+
 
 data2 <- read.csv("C:/Users/antman/Documents/Data R/real_data.csv")
 ####Calculate the number of subfamilies, genera, species and individuals 
@@ -677,6 +680,136 @@ fig8 <- ggplot(table11, aes(x= Sites, y = n_sp, yend=0, fill=Status))+
 # 7) Save the plots
 ggsave("C:/Users/antman/Documents/Plots from R/Figures/Status/sp_sites/sp_sites.png", fig8, dpi = 300, width = 15, height = 13, units = c("cm"))
 ggsave("C:/Users/antman/Documents/Plots from R/Figures/Status/sp_sites/sp_sites.pdf", fig8)
+
+
+###Calculate the number of Subfamilies (here I have used the data "For_Species")
+##per type of culture (habitat)
+new_data <- read.csv("C:/Users/antman/Documents/Data R/For_Species.csv")
+view_sf <- new_data |>
+  group_by(Type)|>
+  summarise(n_sf=n_distinct(Subfamilies))
+
+table12 <- new_data |>
+  group_by(Type, Subfamilies)|>
+  summarise(n_ind=n())
+
+write.csv(table12,"C:/Users/antman/Documents/Data R/Imported file/data_Sf_Type.csv")
+##Figure
+fig9 <- ggplot(table12, aes(x= reorder(Subfamilies, -n_ind), y = n_ind, yend=0, fill=Type))+
+  geom_col(position="stack" , width = 0.9)+
+  scale_fill_continuous(guide= guide_legend(label.position = "left"))+
+  scale_fill_manual(breaks= c("Grassland", "Maize 3", "Maize 6"), values =c("black", "blue", "red"))+
+  ggtitle("Number of individuals per subfamilies for each type of culture")+
+  scale_x_discrete(name = "Subfamilies")+
+  scale_y_continuous(name="Number of individuals", breaks = seq(0, 600, 50), limits = c(0, 600), expand = c(0, 0))+
+  theme(plot.title = element_text(hjust = 0),
+        axis.text.x =element_text(color="black", angle = 60, hjust=1, size = 10, margin = margin(t=0)),
+        axis.line.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.title.x = element_text(size = 12, face = "bold"),
+        panel.background = element_blank(),
+        axis.line.y= element_line(),
+        axis.text.y = element_text(size = 9),
+        axis.title.y = element_text(size = 10, face = "bold"),
+        legend.position = "top",
+        legend.title = element_blank())
+
+ggsave("C:/Users/antman/Documents/Plots from R/Figures/Subfamilies/sf_type.png", fig9, dpi = 300, width = 15, height = 13, units = c("cm"))
+ggsave("C:/Users/antman/Documents/Plots from R/Figures/Subfamilies/sf_type.pdf", fig9)
+
+##per sites
+data2 <- read.csv("C:/Users/antman/Documents/Data R/sites_data.csv")
+#To get the data.frame for plot
+table13 <- data2|>
+  group_by(Sites, Subfamilies) |> 
+  summarise(n_ind=n())
+
+#Figure
+fig10 <- ggplot(table13, aes(x= reorder(Subfamilies, -n_ind), y = n_ind, yend=0, fill=Sites))+
+  geom_col(position="stack" , width = 0.9)+
+  scale_fill_continuous(guide= guide_legend(label.position = "left"))+
+  scale_fill_manual(breaks= c("Grassland", "Maize 3 site1", "Maize 3 site2", "Maize 3 site3", "Maize 6 site1", "Maize 6 site2", "Maize 6 site3"), values =c("black", "skyblue", "royalblue", "darkblue", "pink", "red", "darkred"))+
+  ggtitle("Number of individuals per subfamilies for each site")+xlab("Subfamilies")+ylab("Number of individuals")+
+  scale_y_continuous(breaks = seq(0, 600, 50), limits = c(0, 600), expand = c(0, 0))+
+  theme(plot.title = element_text(hjust = 1, size = 12),
+        axis.text.x =element_text(color="black", angle = 60, hjust=1, size = 10, margin = margin(t=0)),
+        axis.line.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.title.x = element_text(size = 12, face = "bold"),
+        panel.background = element_blank(),
+        axis.line.y= element_line(),
+        axis.text.y = element_text(size = 9),
+        axis.title.y = element_text(size=10, face = "bold"),
+        legend.position = "right",
+        legend.title = element_text(face = "bold"))
+
+# 7) Save the plots
+ggsave("C:/Users/antman/Documents/Plots from R/Figures/Subfamilies/sf_sites.png", fig10, dpi = 300, width = 15, height = 13, units = c("cm"))
+ggsave("C:/Users/antman/Documents/Plots from R/Figures/Subfamilies/sf_sites.pdf", fig10)
+
+
+####to have the number of species for each subfamily in each habitat and each site
+data <- read.csv("C:/Users/antman/Documents/Data R/real_data.csv")
+##per habitat
+#To get the data.frame for plot
+table14 <- data|>
+  group_by(Type, Subfamilies) |> 
+  summarise(n_sp=n_distinct(Species))
+
+#Figure
+fig11 <- ggplot(table14, aes(x= reorder(Subfamilies, -n_sp), y = n_sp, yend=0, fill=Type))+
+  geom_col(width = 0.9)+
+  scale_fill_continuous(guide= guide_legend(label.position = "left"))+
+  scale_fill_manual(breaks= c("Grassland", "Maize 3", "Maize 6"), values =c("black", "blue", "red"))+
+  ggtitle("Number of species per subfamily for each habitat")+xlab("Subfamilies")+ylab("Number of species")+
+  scale_y_continuous(breaks = seq(0, 30, 2), limits = c(0, 30), expand = c(0, 0))+
+  theme(plot.title = element_text(hjust = 1, size = 12),
+        axis.text.x =element_text(color="black", angle = 60, hjust=1, size = 10, margin = margin(t=0)),
+        axis.line.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.title.x = element_text(size = 12, face = "bold"),
+        panel.background = element_blank(),
+        axis.line.y= element_line(),
+        axis.text.y = element_text(size = 9),
+        axis.title.y = element_text(size=10, face = "bold"),
+        legend.position = "right",
+        legend.title = element_text(face = "bold"))
+
+# 7) Save the plots
+ggsave("C:/Users/antman/Documents/Plots from R/Figures/Subfamilies/sp_sf_type.png", fig11, dpi = 300, width = 15, height = 13, units = c("cm"))
+ggsave("C:/Users/antman/Documents/Plots from R/Figures/Subfamilies/sp_sf_type.pdf", fig11)
+
+
+##per sites
+data2 <- read.csv("C:/Users/antman/Documents/Data R/sites_data.csv")
+#To get the data.frame for plot
+table15 <- data2|>
+  group_by(Sites, Subfamilies) |> 
+  summarise(n_sp=n_distinct(Species))
+
+#Figure
+fig12 <- ggplot(table15, aes(x= reorder(Subfamilies, -n_sp), y = n_sp, yend=0, fill=Sites))+
+  geom_col(position="stack" , width = 0.9)+
+  scale_fill_continuous(guide= guide_legend(label.position = "left"))+
+  scale_fill_manual(breaks= c("Grassland", "Maize 3 site1", "Maize 3 site2", "Maize 3 site3", "Maize 6 site1", "Maize 6 site2", "Maize 6 site3"), values =c("black", "skyblue", "royalblue", "darkblue", "pink", "red", "darkred"))+
+  ggtitle("Number of species per subfamilies for each site")+xlab("Subfamilies")+ylab("Number of species")+
+  scale_y_continuous(breaks = seq(0, 55, 5), limits = c(0, 55), expand = c(0, 0))+
+  theme(plot.title = element_text(hjust = 1, size = 12),
+        axis.text.x =element_text(color="black", size = 10, margin = margin(t=0)),
+        axis.line.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.title.x = element_text(size = 12, face = "bold"),
+        panel.background = element_blank(),
+        axis.line.y= element_line(),
+        axis.text.y = element_text(size = 9),
+        axis.title.y = element_text(size=10, face = "bold"),
+        legend.position = "right",
+        legend.title = element_text(face = "bold"))
+
+# 7) Save the plots
+ggsave("C:/Users/antman/Documents/Plots from R/Figures/Subfamilies/sp_sf_sites.png", fig12, dpi = 300, width = 15, height = 13, units = c("cm"))
+ggsave("C:/Users/antman/Documents/Plots from R/Figures/Subfamilies/sp_sf_sites.pdf", fig12)
+
 
 
 #####Rarefaction curves with my final real data
