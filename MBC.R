@@ -848,6 +848,12 @@ ggsave("C:/Users/antman/Documents/Plots from R/Figures/rarefaction/Type3/type3_1
 type3_2 <- ggiNEXT(type3, type=1, facet.var="Order.q", color.var="Assemblage")
 ggsave("C:/Users/antman/Documents/Plots from R/Figures/rarefaction/Type3/type3_2.png", plot=type3_2, width =18, height = 12, units=c("cm"))
 
+#11/05/2023
+####Exercise with the data+variables
+case3 <- read.csv("C:/Users/antman/Documents/Data R/Case3.csv")
+table16a <- case3|>
+  group_by(Sample, Species)|>
+  summarise(n_ind=n())|>
+  pivot_wider(names_from = Sample, values_from = n_ind, values_fill = 0)
+ggplot(
 
-
-  
