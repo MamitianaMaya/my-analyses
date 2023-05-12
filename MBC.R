@@ -615,14 +615,14 @@ mean(table10$n_ind)
 table10$Species <- as.factor(table10$Status)
 table10$Sites <- as.factor(table10$Sites)
 
-# 6) Plot the distribution of species in the different sites
+# 6) Plot the status of species in the different sites
 fig7 <- ggplot(table10, aes(x= Sites, y = n_ind, yend=0, fill=Status))+
   geom_col(position="stack" , width = 0.9)+
   scale_fill_continuous(guide= guide_legend(label.position = "left"))+
   scale_fill_manual(breaks= c("Endemic", "Native", "Exotic", "Invasive"), values =c("green", "yellow", "purple", "red"))+
   ggtitle("Status of species for each site")+xlab("Sites")+ylab("Number of individuals")+
   scale_y_continuous(breaks = seq(0, 200, 20), limits = c(0, 200), expand = c(0, 0))+
-  theme(plot.title = element_text(size = 12),
+  theme(plot.title = element_text(size = 12, face="bold"),
         axis.text.x =element_text(color="black", angle = 60, hjust=1, size = 10, margin = margin(t=0)),
         axis.line.x = element_blank(),
         axis.ticks.x = element_blank(),
@@ -658,14 +658,14 @@ mean(table11$n_sp)
 table11$Status <- as.factor(table10$Status)
 table11$Sites <- as.factor(table10$Sites)
 
-# 6) Plot the distribution of species in the different sites
+# 6) Plot the status of species in the different sites
 fig8 <- ggplot(table11, aes(x= Sites, y = n_sp, yend=0, fill=Status))+
   geom_col(position="stack" , width = 0.9)+
   scale_fill_continuous(guide= guide_legend(label.position = "left"))+
   scale_fill_manual(breaks= c("Endemic", "Native", "Exotic", "Invasive"), values =c("green", "yellow", "purple", "red"))+
   ggtitle("Status of species for each site")+xlab("Sites")+ylab("Number of Species")+
   scale_y_continuous(breaks = seq(0, 15, 1), limits = c(0, 15), expand = c(0, 0))+
-  theme(plot.title = element_text(size = 12),
+  theme(plot.title = element_text(size = 12, face="bold"),
         axis.text.x =element_text(color="black", angle = 60, hjust=1, size = 10, margin = margin(t=0)),
         axis.line.x = element_blank(),
         axis.ticks.x = element_blank(),
@@ -850,10 +850,59 @@ ggsave("C:/Users/antman/Documents/Plots from R/Figures/rarefaction/Type3/type3_2
 
 #11/05/2023
 ####Exercise with the data+variables
-case3 <- read.csv("C:/Users/antman/Documents/Data R/Case3.csv")
-table16a <- case3|>
-  group_by(Sample, Species)|>
-  summarise(n_ind=n())|>
-  pivot_wider(names_from = Sample, values_from = n_ind, values_fill = 0)
-ggplot(
+library(ggplot2)
+###Create data for 
+#Case1
+nn <- 50
+skin <- sample(c("pale", "light", "black", "white", "brown", "dark"), nn, replace=TRUE)
+eyes <- sample(c("blue", "green", "black", "brown"), nn, replace=TRUE)
 
+data_case1 <- data.frame(skin, eyes)
+View(data_case1)
+write.csv(data_case1,"C:/Users/antman/Documents/Data R/Imported file/data_case1.csv")
+
+data2 <- data_case1|>
+  group_by(skin, eyes)|>
+  summarise(n=n())|>
+  pivot_wider(names_from = skin, values_from = n, values_fill = 0)
+chisq.test(data2[,-1])
+str(data2)
+
+ggplot(data_case1, aes(x=eyes, fill=skin))+
+  geom_bar(position = "dodge")
+
+results <- chisq.test(data_case1$skin, data_case1$eyes)
+
+
+#Case2
+nn <- 50
+sites <- sample(c("grassland", "eucalyptus", "maize", "jatropha"), nn, replace=TRUE)
+individuals <- rpois(nn, 50)
+
+data_case2 <- data.frame(sites, individuals)
+View(data_case2)
+write.csv(data_case2,"C:/Users/antman/Documents/Data R/Imported file/data_case2.csv")
+
+
+
+ggplot(data_case2, aes(x= sites, y=individuals))+
+  geom_col()
+
+nat <- c(rep("M", 50), rep("S", 50))
+skin <- c(rep("D", 49), rep('C', 1),rep("C", 48), rep("D", 2))
+eyes <- c(rep("bu", 1), rep("br", 49),rep("bu", 47), rep("br", 3))
+data <- data.frame(nat, skin, eyes)
+chisq.test(data$skin, data$eyes)
+
+ggplot(data, aes(x= skin, fill=eyes))+
+  geom_bar(position = "dodge")
+
+data2 <- data|>
+  group_by(skin, eyes)|>
+  summarise(n=n())|>
+  pivot_wider(names_from = skin, values_from = n, values_fill = 0)
+chisq.test(data2[,-1])
+str(data2)
+
+m1 <- matrix(c(10,20,20,10), nrow = 2, ncol = 2)
+chisq.test(m1)
