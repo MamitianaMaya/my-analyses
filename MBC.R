@@ -240,35 +240,10 @@ data_NA <- read.csv("C:/Users/antman/Documents/Data R/data_maya.csv")
 d <- data_NA %>% 
   mutate(shortSp=paste(substr(Genera, 1, 3), substr(Species, 1, 3), sep="_"))
 write.csv(d,"C:/Users/antman/Documents/Data R/Imported file/shortSp_NA.csv")
-  
-
-###Calculate the number of Species per type of culture
-data_Sp_Type <- new_data |>
-  group_by(Type, shortSp)|>
-  summarise(n_sp=n())|>
-  pivot_wider(names_from = shortSp, values_from = n_sp, values_fill = 0)
-write.csv(data_Sp_Type,"C:/Users/antman/Documents/Data R/Imported file/data_Sp_Type.csv")
-
-
-####Calculate the number of endemic vs exotic Sp per type of land use (number of individuals)
-data_SpStat_Type1 <- new_data |>
-  group_by(Type, Status)|>
-  summarise(n_ind=n())|>
-  pivot_wider(names_from = Status, values_from = n_ind, values_fill = 0)
-write.csv(data_SpStat_Type1,"C:/Users/antman/Documents/Data R/Imported file/data_SpStat_Type1.csv")
-
-####Calculate the number of endemic vs exotic Sp per type of land use (number of Species)
-data_SpStat_Type2 <- new_data |>
-  group_by(Type, Status)|>
-  summarise(n_sp=n_distinct(Species))|>
-  pivot_wider(names_from = Status, values_from = n_sp, values_fill = 0)
-write.csv(data_SpStat_Type2,"C:/Users/antman/Documents/Data R/Imported file/data_SpStat_Type2.csv")
-
-
 
 ###Code for picking variables from the data frame
 ....(data) %>% select(Type, Site, Species, shortSp)
-
+  
 ###Calculate the number of Species per site
 data_Sp_Site <- new_data  |>
   group_by(Type, Site, shortSp) |>
@@ -277,19 +252,48 @@ data_Sp_Site <- new_data  |>
 write.csv(data_Sp_Site,"C:/Users/antman/Documents/Data R/Imported file/data_Sp_Site.csv")
 
 
-###Calculate the number of endemic vs exotic Species per type of land use (number of individuals)
-data_SpStat_Site1 <- new_data  |>
-  group_by(Type, Site, Status) |>
+###Calculate the number of Species per type of culture
+data_Sp_Type <- new_data |>
+  group_by(Type, shortSp)|>
+  summarise(n_sp=n())|>
+  pivot_wider(names_from = shortSp, values_from = n_sp, values_fill = 0)
+write.csv(data_Sp_Type,"C:/Users/antman/Documents/Data R/Imported file/data_Sp_Type.csv")
+view(new_data)
+###Calculate the number of endemic, native, exotic and invasive species (total)
+data_stat <- new_data|>
+  group_by(Status)|>
+  summarise(n=n_distinct(Species))
+write.csv(data_stat,"C:/Users/antman/Documents/Data R/Imported file/data_stat.csv")
+
+
+####Calculate the number of endemic vs exotic Sp per type of land use (number of Species)
+data_SpStat_Type1 <- new_data |>
+  group_by(Type, Status)|>
+  summarise(n_sp=n_distinct(Species))|>
+  pivot_wider(names_from = Status, values_from = n_sp, values_fill = 0)
+write.csv(data_SpStat_Type1,"C:/Users/antman/Documents/Data R/Imported file/data_SpStat_Type1.csv")
+
+####Calculate the number of endemic vs exotic Sp per type of land use (number of individuals)
+data_SpStat_Type2 <- new_data |>
+  group_by(Type, Status)|>
   summarise(n_ind=n())|>
   pivot_wider(names_from = Status, values_from = n_ind, values_fill = 0)
-write.csv(data_SpStat_Site1,"C:/Users/antman/Documents/Data R/Imported file/data_SpStat_Site1.csv")
+write.csv(data_SpStat_Type2,"C:/Users/antman/Documents/Data R/Imported file/data_SpStat_Type2.csv")
 
-###Calculate the number of endemic vs exotic Species per type of land use (number of Species)
-data_SpStat_Site2 <- new_data  |>
+###Calculate the number of endemic vs exotic Species per site (number of Species)
+data_SpStat_Site1 <- new_data  |>
   group_by(Type, Site, Status) |>
   summarise(n_sp=n_distinct(Species))|>
   pivot_wider(names_from = Status, values_from = n_sp, values_fill = 0)
+write.csv(data_SpStat_Site1,"C:/Users/antman/Documents/Data R/Imported file/data_SpStat_Site1.csv")
+
+###Calculate the number of endemic vs exotic Species per site (number of individuals)
+data_SpStat_Site2 <- new_data  |>
+  group_by(Type, Site, Status) |>
+  summarise(n_ind=n())|>
+  pivot_wider(names_from = Status, values_from = n_ind, values_fill = 0)
 write.csv(data_SpStat_Site2,"C:/Users/antman/Documents/Data R/Imported file/data_SpStat_Site2.csv")
+
 
 
 
@@ -694,7 +698,7 @@ table12 <- new_data |>
   summarise(n_ind=n())
 
 write.csv(table12,"C:/Users/antman/Documents/Data R/Imported file/data_Sf_Type.csv")
-##Figure
+##Figure: number of individuals per subfamilies within habitat
 fig9 <- ggplot(table12, aes(x= reorder(Subfamilies, -n_ind), y = n_ind, yend=0, fill=Type))+
   geom_col(position="stack" , width = 0.9)+
   scale_fill_continuous(guide= guide_legend(label.position = "left"))+
@@ -724,8 +728,8 @@ table13 <- data2|>
   group_by(Sites, Subfamilies) |> 
   summarise(n_ind=n())
 
-#Figure
-fig10 <- ggplot(table13, aes(x= reorder(Subfamilies, -n_ind), y = n_ind, yend=0, fill=Sites))+
+#Figure: number of individuals per subfamilies within the sites
+ggplot(table13, aes(x= reorder(Subfamilies, -n_ind), y = n_ind, yend=0, fill=Sites))+
   geom_col(position="stack" , width = 0.9)+
   scale_fill_continuous(guide= guide_legend(label.position = "left"))+
   scale_fill_manual(breaks= c("Grassland", "Maize 3 site1", "Maize 3 site2", "Maize 3 site3", "Maize 6 site1", "Maize 6 site2", "Maize 6 site3"), values =c("black", "skyblue", "royalblue", "darkblue", "pink", "red", "darkred"))+
@@ -756,7 +760,7 @@ table14 <- data|>
   group_by(Type, Subfamilies) |> 
   summarise(n_sp=n_distinct(Species))
 
-#Figure
+#Figure: number of species per subfamilies wthin habitats
 fig11 <- ggplot(table14, aes(x= reorder(Subfamilies, -n_sp), y = n_sp, yend=0, fill=Type))+
   geom_col(width = 0.9)+
   scale_fill_continuous(guide= guide_legend(label.position = "left"))+
@@ -787,7 +791,7 @@ table15 <- data2|>
   group_by(Sites, Subfamilies) |> 
   summarise(n_sp=n_distinct(Species))
 
-#Figure
+#Figure: number of species per subfamilies within sites
 fig12 <- ggplot(table15, aes(x= reorder(Subfamilies, -n_sp), y = n_sp, yend=0, fill=Sites))+
   geom_col(position="stack" , width = 0.9)+
   scale_fill_continuous(guide= guide_legend(label.position = "left"))+
