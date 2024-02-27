@@ -1,225 +1,4 @@
-Name <-c("Nomena","Kanto","Maya","Valery",'Tojo')
-Female<- c(TRUE,TRUE,TRUE,FALSE,FALSE)
-Height<-c(1.60,1.52,1.51,1.62,1.71) 
-MBC <- data.frame(Name,Female,Height)
 
-"C:/Users/Ant Lab 003/Documents/Data_frame.csv"
-read.csv("C:/Users/Ant Lab 003/Documents/Data_frame.csv")
-importation_fichier <- read.csv("C:/Users/Ant Lab 003/Documents/Data_frame.csv")
-read.csv2("C:/Users/Ant Lab 003/Documents/Data_frame.csv")
-library(dplyr)
-"c:/Users/Ant Lab 003/Documents/Data_frame.csv"
-read.csv("C:/Users/Ant Lab 003/Documents/Data_frame.csv")
-importation_fichier <- read.csv("C:/Users/Ant Lab 003/Documents/Data_frame.csv")
-mean(importation_fichier$Height)
-str(importation_fichier)
-sd(importation_fichier$Height)
-
-####IMPORTATION DONNEES EXO1####
-read.csv("C:/Users/Ant Lab 003/Documents/Exo/data_exo1.csv")
-tableau_exo1 <- read.csv("C:/Users/Ant Lab 003/Documents/Exo/data_exo1.csv")
-
-###Methodes t@correction
-
-mean_temp <-mean(tableau_exo1$temperature) 
-mean_eggs <- mean(tableau_exo1$eggs)
-
-med_temp <- median(tableau_exo1$temperature)
-med_eggs <- median(tableau_exo1$eggs)
-
-sd_temp <- sd(tableau_exo1$temperature)
-sd_eggs <- sd(tableau_exo1$eggs)
-              
-min_temp <- min(tableau_exo1$temperature)
-min_eggs <- min(tableau_exo1$eggs)
-
-max_temp <- max(tableau_exo1$temperature)
-max_eggs <- max(tableau_exo1$eggs)
-
-temperature <- c(mean_temp,med_temp,sd_temp,min_temp,max_temp)
-eggs <- c(mean_eggs,median_eggs,sd_eggs,min_eggs,max_eggs)
-
-results <- data.frame(temperature,eggs)
-row.names(results) <- c("mean","median","sd","min","max")
-View(results)
-
-write.csv(results,"C:/Users/Ant Lab 003/Documents/Github/export2_exo1.csv")
-
-####2nd methods
-
-mean(tableau_exo1$temperature)
-median(tableau_exo1$temperature)
-sd(tableau_exo1$temperature)
-min(tableau_exo1$temperature)
-max(tableau_exo1$temperature)
-
-####CALCUL_Eggs####
-mean(tableau_exo1$eggs)
-median(tableau_exo1$eggs)
-sd(tableau_exo1$eggs)
-min(tableau_exo1$eggs)
-max(tableau_exo1$eggs)
-
-####IMPORTATION DATA FRAME.CSV####
-results_exo1 <- read.csv("C:/Users/Ant Lab 003/Documents/Exo/data_frame_exo1.csv")
-
-####CODE MANAMBOATRA DATA FRAME####
-parameters <- c("mean","median","sd","min","max")
-temperature <- c(272.5187,273.426,20.8065,225.193,325.426)
-eggs <- c(101.22,100,9.831832,70,130)
-final_results <- data.frame(parameters,temperature,eggs)
-####Exportation fichier
-
-write.csv(final_results,"C:/Users/Ant Lab 003/Documents/Github/export_data_exo1.csv")
-
-###Milalao donnees @dplyr
-library(dplyr)
-View(starwars)
-dat1 <- starwars |>
-mutate(height_m = height * 0.01, bmi = mass/(height_m)^2)  |>
-select(name, bmi, gender)  |>
-filter(bmi > 25 & gender == "masculine")
-
-###19/01/2022
-library(dplyr)
-library(ggplot2)
-
-#import data
-data <- read.csv("C:/Users/antman/Documents/Data R/data_maya.csv")
-
-#Look at the number of rows and columns
-dim(data)
-
-#Calculate the number of individuals and genera per subfamilies
-d1 <- data  |>
-  group_by(Type,Subfamilies) |> 
-  summarise(n_ind=n(),n_gen=n_distinct(Genres),n_sp=n_distinct(SpeciesName))
-#Calculate the number of genera, sp, individuals per Type and site
-Nind <- data  |>
-  group_by(Type, Site) |> 
-  summarise(n_gen=n_distinct(Genres),n_sp=n_distinct(SpeciesName), n_ind=n())
-#Calculate the number of individuals and genera per transect per pitfall
-d2 <- data  |>  
-  group_by(Collectors.code, subsample)  |>
-  summarise(n_ind=n(),n_gen=n_distinct(Genres)) 
-
-#Total of individuals
-sum(d1$n_ind)
-View(d2)
-sum(d2$n_ind)
-
-#Plot the number of genera per transect
-#1
-ggplot(d1, aes(x=Collectors.code, y=n_gen))+
-  geom_col()
-
-#2
-ggplot(data, aes(x=Collectors.code))+
-  geom_bar()
-
-#multipanel figure, panel=transect
-ggplot(data, aes(x=subsample))+
-  geom_bar()+
-  facet_wrap(~Collectors.code)
-
-#Exercise with my own data
-#Install packages
-library(dplyr)
-library(ggplot2)
-
-#Import my data
-my_data <- read.csv("C:/Users/antman/Documents/Data/my_data.csv")
-
-#Look at the number of rows and columns
-dim(my_data)
-
-#Calculate the number of individuals and genera per transect per site
-d <- my_data  |>
-  group_by(Site, Transect) |>
-  summarise(n_gen=n_distinct(Genus), n_ind=n())
-
-#Plot the number of genera per site
-ggplot(d, aes(x=n_gen))+
-  geom_bar()+
-  facet_wrap(~Site)+
-  ggtitle("number of genera per site")+xlab("N Genera")
-
-
-#Calculate the number of individuals and genera per subsample per transect per site
-d1a <- my_data  |>
-  group_by(Site, Transect, Subsample)  |>  
-  summarise(n_gen=n_distinct(Genus), n_ind=n())
-
-#Calculating the number of genera per type 
-d1b <- my_data  |>
-  group_by(Type)  |>
-  summarise(n_gen=n_distinct(Genus))  
-
-#Plot the number of genera per type of culture
-ggplot(d1b, aes(x=Type, y=n_gen))+
-  geom_col()+
-  ggtitle("Number of genera per age of cultivation")+xlab("Age of cultivation")+ylab("N genera")
-
-
-
-#Calculating the number of individuals per subsample per transect per site per number
-d1c <- my_data  |>
-  group_by(Type, Site, Transect, Subsample)  |>
-  summarise(n_gen=n_distinct(Genus), n_ind=n())
-
-#Plot the number of individuals per type of culture
-ggplot(d1c, aes(x=n_ind, y=Type))+
-  geom_col()+
-  ggtitle("N individuals")+xlab("Age of cultivation")+ylab("N individuals")
-
-ggplot(d1c, aes(x=Transect))+
-  geom_bar()
-
-# multiplanel figure: panel = transect
-ggplot(d1c, aes(x =Subsample)) +
-  geom_bar()+
-  facet_wrap(~Type)+
-  ggtitle("number of individuals per age of cultivation")+xlab("Age of cultivation")+ylab("N individuals")
-
-library(dplyr)
-final_data <- read.csv("C:/Users/antman/Documents/Data/data_maya.csv")
-individuals <- final_data |>
-  group_by(Type)  |>
-  summarise(n_ind=n(), n_gen=n_distinct(Genus))  
-
-number <- final_data |>
-  group_by(Type, Site, Transect)  |>
-  summarise(n_ind=n(), n_gen=n_distinct(Genus))  
-
-data_num <- number
-write.csv(data_num, "C:/Users/antman/Documents/Data/Nindividuals.csv")
-
-data_mounting <- read.csv("C:/Users/antman/Documents/Data/data_maya.csv")
-Total <- data_mounting |>
-  group_by(Type, Site, Transect, Subsample, Residus) |> 
-  summarise(n_ind=n(), n_res=n_distinct(yes$Residus))  
-
-
-#RAREFACTION EXERCISE WITH DATA + FAKE SPECIES NAME
-##Examples
-data(bird) 
-out <- iNEXT(bird, datatype="abundance") 
-ggiNEXT(out)
-
-data(ant)
-data(ciliates)
-data(spider)
-#with my data
-install.packages("iNEXT")
-library(iNEXT)
-library(ggplot2)
-library(dplyr)
-inext_data <- read.csv("C:/Users/antman/Documents/Data R/data_rare.csv")
-data2 <- inext_data[, -1]
-maize <- iNEXT(data2, q=0, datatype="abundance")
-ggiNEXT(maize, type=3)
-type2 <- iNEXT(data2, q=c(0,1,2), datatype="abundance")
-ggiNEXT(type2, type=3, facet.var = "order")
 
                                 #14/04/2023
                            #####DataAnalyses
@@ -231,10 +10,21 @@ data1 <- read.csv("C:/Users/antman/Documents/Data R/For_Species.csv")
 View(data1)
 str(data1)
 
+
+
 ####Add a new column with the short Species names to the data frame
 new_data <- data1 %>% 
 mutate(shortSp=paste(substr(Genera, 1, 3), substr(Species, 1, 3), sep="_"))
+
 write.csv(new_data,"C:/Users/antman/Documents/Data R/Imported file/shortSp.csv")
+
+data2 <- read.csv("C:/Users/antman/Documents/Data R/List_species.csv")
+View(data2)
+
+new_data2 <- data2 %>% 
+  mutate(shortSp=paste(substr(Genera, 1, 3), substr(Species, 1, 3), sep="_"))
+
+write.csv(new_data2,"C:/Users/antman/Documents/Data R/Imported file/shortSp_List.csv")
 ####The same with the data + NA
 data_NA <- read.csv("C:/Users/antman/Documents/Data R/data_maya.csv")
 d <- data_NA %>% 
@@ -252,6 +42,7 @@ data_Sp_Site <- new_data  |>
 write.csv(data_Sp_Site,"C:/Users/antman/Documents/Data R/Imported file/data_Sp_Site.csv")
 
 
+
 ###Calculate the number of Species per type of culture
 data_Sp_Type <- new_data |>
   group_by(Type, shortSp)|>
@@ -259,6 +50,14 @@ data_Sp_Type <- new_data |>
   pivot_wider(names_from = shortSp, values_from = n_sp, values_fill = 0)
 write.csv(data_Sp_Type,"C:/Users/antman/Documents/Data R/Imported file/data_Sp_Type.csv")
 view(new_data)
+
+data_Trnsct <- new_data |>
+  group_by(Type, Site, Transect, Subsample, shortSp)|>
+  summarise(n_sp=n())|>
+  pivot_wider(names_from = shortSp, values_from = n_sp, values_fill = 0)
+write.csv(data_Trnsct,"C:/Users/antman/Documents/Data R/Imported file/species_matrix_Maya.csv")
+view(new_data)
+
 ###Calculate the number of endemic, native, exotic and invasive species (total)
 data_stat <- new_data|>
   group_by(Status)|>
@@ -269,16 +68,26 @@ write.csv(data_stat,"C:/Users/antman/Documents/Data R/Imported file/data_stat.cs
 ####Calculate the number of endemic vs exotic Sp per type of land use (number of Species)
 data_SpStat_Type1 <- new_data |>
   group_by(Type, Status)|>
-  summarise(n_sp=n_distinct(Species))|>
-  pivot_wider(names_from = Status, values_from = n_sp, values_fill = 0)
+  summarise(n_sp=n_distinct(Species))
 write.csv(data_SpStat_Type1,"C:/Users/antman/Documents/Data R/Imported file/data_SpStat_Type1.csv")
+
+###Tests
+anova <- aov(n_sp~Type, data_SpStat_Type1) 
+## ====> #difference significative
+kruskal <- kruskal.test(n_sp~Type, data_SpStat_Type1) 
+## ===> #pas de difference significative
 
 ####Calculate the number of endemic vs exotic Sp per type of land use (number of individuals)
 data_SpStat_Type2 <- new_data |>
   group_by(Type, Status)|>
-  summarise(n_ind=n())|>
-  pivot_wider(names_from = Status, values_from = n_ind, values_fill = 0)
+  summarise(n_ind=n())
 write.csv(data_SpStat_Type2,"C:/Users/antman/Documents/Data R/Imported file/data_SpStat_Type2.csv")
+
+###Tests
+anova <- aov(n_ind~Type, data_SpStat_Type2) 
+## ====> #difference significative
+kruskal <- kruskal.test(n_ind~Type, data_SpStat_Type2) 
+## ===> #pas de difference significative
 
 ###Calculate the number of endemic vs exotic Species per site (number of Species)
 data_SpStat_Site1 <- new_data  |>
@@ -298,6 +107,7 @@ write.csv(data_SpStat_Site2,"C:/Users/antman/Documents/Data R/Imported file/data
 
 
 data2 <- read.csv("C:/Users/antman/Documents/Data R/real_data.csv")
+
 ####Calculate the number of subfamilies, genera, species and individuals 
 #per type and site
 table1 <- data2  |>
@@ -315,6 +125,23 @@ table3 <- data2  |>
   group_by(Type, Site, Transect) |> 
   summarise(n_sf=n_distinct(Subfamilies), n_gen=n_distinct(Genera),n_sp=n_distinct(Species),n_ind=n())
 write.csv(table3,"C:/Users/antman/Documents/Data R/Imported file/table3.csv")
+
+##### Donnees pour faire t-test et ANOVA
+table <- data2  |>
+  group_by(Type, Site) |> 
+  summarise(n_sp=n_distinct(Species))
+dat2 <- table [-1, ]
+view(dat2)
+##### t-test pour q=o
+x1 <- c(10, 9, 7)
+
+x2 <- c(8, 5, 8)
+
+ttest <- t.test(x1, x2, var.equal = TRUE)
+
+one.aov <- aov(n_sp~Type, dat2)
+summary.aov(one.aov)
+
 
 ####Calculation of average, min and max Genera per transect
 ##Meth1
@@ -347,6 +174,15 @@ Nspecies <- data_mounting |>
   group_by(Type, Site, Transect)|>
   summarise(n_sp=n_distinct(Species))
 write.csv(Nspecies,"C:/Users/antman/Documents/Data R/Imported file/Nspecies.csv")
+
+
+Nsp <- data_mounting |>
+  group_by(Type)|>
+  summarise(n_sp=n_distinct(Species))
+
+anova <- aov(n_sp~Type, Nsp)
+summary(anova)
+print(summary(anova))
 
 mean(Nspecies$n_sp)
 min(Nspecies$n_sp)
@@ -389,6 +225,20 @@ table4 <- data2  |>
   summarise(n_ind=n())
 write.csv(table4,"C:/Users/antman/Documents/Data R/Imported file/table4.csv")
 
+table4a <- data2  |>
+  group_by(Type, Species, Transect) |> 
+  summarise(n_ind=n())
+
+anova <- aov(n_ind~Type, table4a)
+###Tests
+anova <- aov(n_ind~Type, table4) 
+## ====> #difference significative
+kruskal <- kruskal.test(n_ind~Type, table4) 
+## ===> #pas de difference significative
+
+
+
+
 max(table4$n_ind)
 mean(table4$n_ind)
 min(table4$n_ind)
@@ -399,7 +249,7 @@ table4$Species <- as_factor(table4$Species)
 table4$Type <- as.factor((table4$Type))
 
 ## 3) Plot the data to show the distribution of the species in the 3 type of land use(histogram)
-fig1 <- ggplot(table4, aes(x= reorder(Species, -n_ind), y = n_ind, yend=0, fill=Type))+
+ggplot(table4, aes(x= reorder(Species, -n_ind), y = n_ind, yend=0, fill=Type))+
   geom_col(position="stack" , width = 0.9)+
   scale_fill_continuous(guide= guide_legend(label.position = "left"))+
   scale_fill_manual(breaks= c("Grassland", "Maize 3", "Maize 6"), values =c("black", "blue", "red"))+
@@ -482,15 +332,18 @@ table6 <- data_rich|>
   group_by(Type)|>
   summarise(n_sp=n_distinct(Species))
 
-fig3 <- ggplot(table6, aes(x= Type, y=n_sp, yend=0, fill=Type))+
+ggplot(table6, aes(x= Type, y=n_sp, yend=0, fill=Type))+
   geom_col(width = 0.8)+
   scale_y_continuous(breaks = seq(0, 15, 5), limits = c(0, 15), expand = c(0, 0))+
   ggtitle("Ant species richness within the type of land use")+ xlab("Type of land use")+ ylab("Ant species richness")+
-  scale_fill_manual(values=c("black", "blue", "red"))+
+  scale_fill_manual(values=c("red", "blue", "black"))+
   theme(panel.background = element_blank(),
         axis.line.x = element_blank(),
         axis.line.y = element_line(),
         axis.ticks.x=element_blank())
+###tests
+anova <- aov(n_sp~Type, table6)
+kruskal <- kruskal.test(n_sp~Type, table6)
  
 ggsave("C:/Users/antman/Documents/Plots from R/Figures/Fig_richness/fig3.png", fig3, dpi = 300, width = 15, height = 13, units = c("cm"))
 ggsave("C:/Users/antman/Documents/Plots from R/Figures/Fig_richness/fig3.pdf", fig3)
@@ -707,7 +560,7 @@ fig9 <- ggplot(table12, aes(x= reorder(Subfamilies, -n_ind), y = n_ind, yend=0, 
   scale_x_discrete(name = "Subfamilies")+
   scale_y_continuous(name="Number of individuals", breaks = seq(0, 600, 50), limits = c(0, 600), expand = c(0, 0))+
   theme(plot.title = element_text(hjust = 0),
-        axis.text.x =element_text(color="black", angle = 60, hjust=1, size = 10, margin = margin(t=0)),
+        axis.text.x =element_text(color="black", size = 10, margin = margin(t=0)),
         axis.line.x = element_blank(),
         axis.ticks.x = element_blank(),
         axis.title.x = element_text(size = 12, face = "bold"),
@@ -729,14 +582,14 @@ table13 <- data2|>
   summarise(n_ind=n())
 
 #Figure: number of individuals per subfamilies within the sites
-ggplot(table13, aes(x= reorder(Subfamilies, -n_ind), y = n_ind, yend=0, fill=Sites))+
+fig10 <- ggplot(table13, aes(x= reorder(Subfamilies, -n_ind), y = n_ind, yend=0, fill=Sites))+
   geom_col(position="stack" , width = 0.9)+
   scale_fill_continuous(guide= guide_legend(label.position = "left"))+
   scale_fill_manual(breaks= c("Grassland", "Maize 3 site1", "Maize 3 site2", "Maize 3 site3", "Maize 6 site1", "Maize 6 site2", "Maize 6 site3"), values =c("black", "skyblue", "royalblue", "darkblue", "pink", "red", "darkred"))+
   ggtitle("Number of individuals per subfamilies for each site")+xlab("Subfamilies")+ylab("Number of individuals")+
   scale_y_continuous(breaks = seq(0, 600, 50), limits = c(0, 600), expand = c(0, 0))+
   theme(plot.title = element_text(hjust = 1, size = 12),
-        axis.text.x =element_text(color="black", angle = 60, hjust=1, size = 10, margin = margin(t=0)),
+        axis.text.x =element_text(color="black", size = 10, margin = margin(t=0)),
         axis.line.x = element_blank(),
         axis.ticks.x = element_blank(),
         axis.title.x = element_text(size = 12, face = "bold"),
@@ -768,7 +621,7 @@ fig11 <- ggplot(table14, aes(x= reorder(Subfamilies, -n_sp), y = n_sp, yend=0, f
   ggtitle("Number of species per subfamily for each habitat")+xlab("Subfamilies")+ylab("Number of species")+
   scale_y_continuous(breaks = seq(0, 30, 2), limits = c(0, 30), expand = c(0, 0))+
   theme(plot.title = element_text(hjust = 1, size = 12),
-        axis.text.x =element_text(color="black", angle = 60, hjust=1, size = 10, margin = margin(t=0)),
+        axis.text.x =element_text(color="black", size = 10, margin = margin(t=0)),
         axis.line.x = element_blank(),
         axis.ticks.x = element_blank(),
         axis.title.x = element_text(size = 12, face = "bold"),
@@ -856,7 +709,7 @@ ggsave("C:/Users/antman/Documents/Plots from R/Figures/rarefaction/Type3/type3_2
 ####Exercise with the data+variables
 library(ggplot2)
 ###Create data for 
-#Case1
+#Case1 (X categorical/ Y categorical)
 nn <- 50
 skin <- sample(c("pale", "light", "black", "white", "brown", "dark"), nn, replace=TRUE)
 eyes <- sample(c("blue", "green", "black", "brown"), nn, replace=TRUE)
@@ -878,7 +731,7 @@ ggplot(data_case1, aes(x=eyes, fill=skin))+
 results <- chisq.test(data_case1$skin, data_case1$eyes)
 
 
-#Case2
+#Case2 (X categorical/ Y numerical)
 nn <- 50
 sites <- sample(c("grassland", "eucalyptus", "maize", "jatropha"), nn, replace=TRUE)
 individuals <- rpois(nn, 50)
@@ -910,3 +763,172 @@ str(data2)
 
 m1 <- matrix(c(10,20,20,10), nrow = 2, ncol = 2)
 chisq.test(m1)
+
+####Stat test with my data
+###Calculate the number of individuals per Species for each site
+library(ggplot2)
+data_Site <- new_data  |>
+  group_by(Type, Site, shortSp) |>
+  summarise(n_ind=n())
+ggplot(data_Site, aes(x=Site, y=n_ind))+
+  geom_col()
+       
+model <- aov(n_ind~Site, data_Site)
+kruskal.test(n_ind~Site, data_Site)
+
+###Calculate the number of individuals per Species per type of culture
+data_Type <- new_data  |>
+  group_by(Type, shortSp) |>
+  summarise(n_ind=n())
+ggplot(data_Type, aes(x=Type, y=n_ind))+
+  geom_col()
+model <- aov(n_ind~Type, data_Type)
+kruskal.test(n_ind~Type, data_Type)
+
+##the number of species per site
+data <- read.csv("C:/Users/antman/Documents/Data R/sites_data.csv")
+data1 <- data|>
+  group_by(Sites)|>
+  summarise(n_sp=n_distinct(Species))
+
+ggplot(data1, aes(x= Sites, y = n_sp, yend=0))+
+  geom_col(width = 0.9)+
+  scale_fill_continuous(guide= guide_legend(label.position = "left"))+
+  ggtitle("Number of species for each site")+xlab("Sites")+ylab("Number of species")+
+  scale_y_continuous(breaks = seq(0, 15, 1), limits = c(0, 15), expand = c(0, 0))+
+  theme(plot.title = element_text(size = 12),
+        axis.text.x =element_text(color="black", angle = 60, hjust=1, size = 10, margin = margin(t=0)),
+        axis.line.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.title.x = element_text(size = 12, face = "bold"),
+        panel.background = element_blank(),
+        axis.line.y= element_line(),
+        axis.text.y = element_text(size = 9),
+        axis.title.y = element_text(size=10, face = "bold"),
+        legend.position = "right",
+        legend.title = element_text(face = "bold"))
+res <- aov(n_sp~Sites, data1)
+kruskal.test(n_sp~Sites, data1)
+
+
+##### t-test pour q=o
+x1 <- c(10, 9, 7)
+
+x2 <- c(8, 5, 8)
+
+ttest <- t.test(x1, x2, var.equal = TRUE)
+
+##### Data to perform ANOVA and t-test for analysis: data diversity, species richness
+data2 <- read.csv("C:/Users/antman/Documents/Data R/real_data.csv")
+table <- data2  |>
+  group_by(Type, Site) |> 
+  summarise(n_sp=n_distinct(Species))
+
+### To perform ANOVA test with (q=0), data with Grassland 
+one.aov <- aov(n_sp~Type, table)
+summary.aov(one.aov)
+
+tukey_results <- TukeyHSD(one.aov)
+
+# Conversion des colonnes d'abondance en format numérique
+abundance_data <- as.data.frame(sapply(abundance_data, as.numeric))
+#### To perform ANOVA test with (q=0), data Without GRASSLAND
+dat <- table [-1, ]
+view(dat)
+
+one.aov <- aov(n_sp~Type, dat)
+summary.aov(one.aov)
+
+##### ANOVA pour q=o
+one.aov <- aov(n_sp~Type, dat2)
+summary.aov(one.aov)
+
+kruskal.test(n_sp~Type, dat2)
+
+##### To calculate Shannon diversity and Simpson diversity with my data
+install.packages("vegan")
+library(vegan)
+data_abundance <- read.csv("C:/Users/antman/Documents/Data R/Imported file/data_Sp_Site_Maya.csv")
+
+as.factor(data2$Type)
+as.factor(data2$Site)
+as.numeric(data2$Aph_swa)
+as.numeric(data2$Cam_hov)
+as.numeric(data2$Cam_mad)
+as.numeric(data2$Car_eme)
+as.numeric(data2$Cre_tsi)
+as.numeric(data2$Liv_mg1)
+as.numeric(data2$Mer_may)
+as.numeric(data2$Mon_mad)
+as.numeric(data2$Mon_nig)
+as.numeric(data2$Nyl_mad)
+as.numeric(data2$Phe_meg)
+as.numeric(data2$Tet_ano)
+as.numeric(data2$Tet_del)
+as.numeric(data2$Tet_ser)
+as.numeric(data2$Tet_sim)
+as.numeric(data2$Car_shu)
+as.numeric(data2$Nyl_bou)
+as.numeric(data2$Err_lat)
+as.numeric(data2$Pla_mad)
+head(data2)
+str(data2)
+
+# Sélection des colonnes d'abondance seulement (à l'exception de "X", "Type" et "Site")
+abundance_data <- data_abundance[, -(1:3)]
+
+# Conversion des colonnes d'abondance en format numérique
+abundance_data <- as.data.frame(sapply(abundance_data, as.numeric))
+
+# Calcul de la diversité de Shannon
+shannon_diversity <- diversity(abundance_data, index = "shannon")
+### Shannon diversity as data frame
+shannon_table <- data.frame(Echantillon = 1:length(shannon_diversity), Shannon = shannon_diversity)
+colnames(shannon_table) <- c("Sites", "Indice de Shannon")
+view(shannon_table)
+write.csv(shannon_table,"C:/Users/antman/Documents/Data R/Imported file/diversite_Shannon.csv")
+
+#### To perform ANOVA with Shannon diversity (q=1), with grassland
+data_shannon <- read.csv("C:/Users/antman/Documents/Data R/data_Shannon.csv")
+view(data_shannon)
+colnames(data_shannon) <- c("Type", "Sites", "Indice")
+data2 <- data_shannon [-1, ]
+one.aov <- aov(Indice~Type, data_shannon)
+summary.aov(one.aov)
+
+tukey_results <- TukeyHSD(one.aov)
+
+#### To perform ANOVA with Shannon diversity (q=1), without grassland
+data_shannon <- read.csv("C:/Users/antman/Documents/Data R/data_Shannon.csv")
+data2 <- data_shannon [-1, ]
+view(data2)
+colnames(data2) <- c("Type", "Sites", "Indice")
+one.aov <- aov(Indice~Type, data2)
+summary.aov(one.aov)
+
+#### Simpson diversity 
+simpson_diversity <- diversity(abundance_data, index = "simpson")
+simpson_table <- data.frame(Echantillon = 1:length(simpson_diversity), Simpson = simpson_diversity)
+colnames(simpson_table) <- c("Sites", "Indice de Simpson")
+view(simpson_table)
+write.csv(simpson_table,"C:/Users/antman/Documents/Data R/Imported file/diversite_Simpson.csv")
+
+#### To perform ANOVA with Simpson diversity (q=2) with Grassland
+data_simpson <- read.csv("C:/Users/antman/Documents/Data R/data_Simpson.csv")
+colnames(data_simpson) <- c("Type", "Sites", "Indice")
+view(data_simpson)
+
+one.aov <- aov(Indice~Type, data_simpson)
+summary.aov(one.aov)
+
+tukey_results <- TukeyHSD(one.aov)
+
+#### To perform ANOVA with Simpson diversity (q=2) without Grassland
+data_simpson <- read.csv("C:/Users/antman/Documents/Data R/data_Simpson.csv")
+data3 <- data_simpson[-1, ]
+colnames(data3) <- c("Type", "Sites", "Indice")
+view(data3)
+
+one.aov <- aov(Indice~Type, data3)
+summary.aov(one.aov)
+
